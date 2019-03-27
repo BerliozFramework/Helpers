@@ -87,9 +87,9 @@ final class ImageHelper
                 if (($newRatio >= $ratio && $mode | self::SIZE_LARGER_EDGE == self::SIZE_LARGER_EDGE) ||
                     ($newRatio <= $ratio && $mode | self::SIZE_LARGER_EDGE != self::SIZE_LARGER_EDGE)) {
                     $size = ['width'  => $newWidth,
-                             'height' => ceil($newWidth * $originalHeight / $originalWidth)];
+                             'height' => (int) ceil($newWidth * $originalHeight / $originalWidth)];
                 } else {
-                    $size = ['width'  => ceil($newHeight * $originalWidth / $originalHeight),
+                    $size = ['width'  => (int) ceil($newHeight * $originalWidth / $originalHeight),
                              'height' => $newHeight];
                 }
             } // We don't keep ratio, and all sizes are given, so we force new size !
@@ -101,11 +101,11 @@ final class ImageHelper
             // Only width given, keep ratio so...
             if (!is_null($newWidth)) {
                 $size = ['width'  => $newWidth,
-                         'height' => ceil($newWidth * $originalHeight / $originalWidth)];
+                         'height' => (int) ceil($newWidth * $originalHeight / $originalWidth)];
             } else {
                 // Only height given, keep ratio so...
                 if (!is_null($newHeight)) {
-                    $size = ['width'  => ceil($newHeight * $originalWidth / $originalHeight),
+                    $size = ['width'  => (int) ceil($newHeight * $originalWidth / $originalHeight),
                              'height' => $newHeight];
                 } // No size given, we keep original sizes !
                 else {
