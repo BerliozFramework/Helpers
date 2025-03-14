@@ -171,6 +171,7 @@ class StringHelperTest extends TestCase
 
         $this->assertEquals([], StringHelper::parseStr(''));
         $this->assertEquals([], StringHelper::parseStr('=foo'));
+        $this->assertSame(['foo' => ''], StringHelper::parseStr('foo'));
     }
 
     public function testParseStr_dontKeepDots()

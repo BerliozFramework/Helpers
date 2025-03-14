@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.10.0] - 2025-03-14
+
+### Changed
+
+- PHP 8.4 compatibility
+
 ## [1.9.0] - 2022-10-26
 
 ### Added

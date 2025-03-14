@@ -116,8 +116,8 @@ final class ImageHelper
     public static function size(
         int $originalWidth,
         int $originalHeight,
-        int $newWidth = null,
-        int $newHeight = null,
+        ?int $newWidth = null,
+        ?int $newHeight = null,
         int $mode = self::SIZE_RATIO
     ): array {
         // No size given, we keep original sizes!
@@ -217,7 +217,7 @@ final class ImageHelper
      * @return resource|GdImage
      * @throws InvalidArgumentException if not valid input resource or file name
      */
-    public static function resize($img, int $newWidth = null, int $newHeight = null, int $mode = self::SIZE_RATIO)
+    public static function resize($img, ?int $newWidth = null, ?int $newHeight = null, int $mode = self::SIZE_RATIO)
     {
         if (!extension_loaded('gd')) {
             throw new RuntimeException('Need GD extension');
@@ -270,13 +270,13 @@ final class ImageHelper
      * Resize support of image.
      *
      * @param string|resource|GdImage $img File name or image resource
-     * @param int $newWidth New width
-     * @param int $newHeight New height
+     * @param int|null $newWidth New width
+     * @param int|null $newHeight New height
      *
      * @return resource|GdImage
      * @throws InvalidArgumentException if not valid input resource or file name
      */
-    public static function resizeSupport($img, int $newWidth = null, int $newHeight = null)
+    public static function resizeSupport($img, ?int $newWidth = null, ?int $newHeight = null)
     {
         if (!extension_loaded('gd')) {
             throw new RuntimeException('Need GD extension');

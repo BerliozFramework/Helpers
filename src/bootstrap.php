@@ -102,12 +102,12 @@ function b_array_traverse_exists(&$mixed, string $path)
  *
  * @param iterable $mixed Source
  * @param string $path Path
- * @param mixed $default Default value
+ * @param mixed|null $default Default value
  *
  * @return mixed|null
  * @throws InvalidArgumentException if first argument is not a traversable data
  */
-function b_array_traverse_get(&$mixed, string $path, $default = null)
+function b_array_traverse_get(iterable &$mixed, string $path, $default = null)
 {
     return ArrayHelper::traverseGet($mixed, $path, $default);
 }
@@ -122,7 +122,7 @@ function b_array_traverse_get(&$mixed, string $path, $default = null)
  * @return bool
  * @throws InvalidArgumentException if first argument is not a traversable data
  */
-function b_array_traverse_set(&$mixed, string $path, $value): bool
+function b_array_traverse_set(iterable &$mixed, string $path, $value): bool
 {
     return ArrayHelper::traverseSet($mixed, $path, $value);
 }
@@ -148,7 +148,7 @@ function b_array_simple(array $array, ?string $prefix = null): array
 /**
  * Get a human see file size.
  *
- * @param int|float $size
+ * @param float|int $size
  * @param int $precision
  *
  * @return string
@@ -242,7 +242,7 @@ function b_ftruncate($resource, int $size, ?int $offset = null): bool
  * @return mixed
  * @throws ReflectionException
  */
-function b_get_property_value($object, string $property, &$exists = null)
+function b_get_property_value(object $object, string $property, ?bool &$exists = null)
 {
     return ObjectHelper::getPropertyValue($object, $property, $exists);
 }
@@ -257,7 +257,7 @@ function b_get_property_value($object, string $property, &$exists = null)
  * @return bool
  * @throws ReflectionException
  */
-function b_set_property_value($object, string $property, $value): bool
+function b_set_property_value(object$object, string $property, $value): bool
 {
     return ObjectHelper::setPropertyValue($object, $property, $value);
 }
@@ -267,14 +267,14 @@ function b_set_property_value($object, string $property, $value): bool
 /// STRING HELPER ///
 /////////////////////
 
-define('B_STR_RANDOM_ALPHA', 1);
-define('B_STR_RANDOM_NUMERIC', 2);
-define('B_STR_RANDOM_SPECIAL_CHARACTERS', 4);
-define('B_STR_RANDOM_LOWER_CASE', 8);
-define('B_STR_RANDOM_NEED_ALL', 16);
-define('B_TRUNCATE_LEFT', 1);
-define('B_TRUNCATE_MIDDLE', 2);
-define('B_TRUNCATE_RIGHT', 3);
+const B_STR_RANDOM_ALPHA = 1;
+const B_STR_RANDOM_NUMERIC = 2;
+const B_STR_RANDOM_SPECIAL_CHARACTERS = 4;
+const B_STR_RANDOM_LOWER_CASE = 8;
+const B_STR_RANDOM_NEED_ALL = 16;
+const B_TRUNCATE_LEFT = 1;
+const B_TRUNCATE_MIDDLE = 2;
+const B_TRUNCATE_RIGHT = 3;
 
 
 /**
@@ -428,9 +428,9 @@ function b_spinal_case(string $str): string
 /// IMAGE HELPER ///
 /////////////////////
 
-define('B_IMG_SIZE_RATIO', 1);
-define('B_IMG_SIZE_LARGER_EDGE', 2);
-define('B_IMG_RESIZE_COVER', 4);
+const B_IMG_SIZE_RATIO = 1;
+const B_IMG_SIZE_LARGER_EDGE = 2;
+const B_IMG_RESIZE_COVER = 4;
 
 /**
  * Calculate a gradient destination color.
@@ -460,8 +460,8 @@ function b_gradient_color(string $color, string $colorToAdd, float $percentToAdd
 function b_img_size(
     int $originalWidth,
     int $originalHeight,
-    int $newWidth = null,
-    int $newHeight = null,
+    ?int $newWidth = null,
+    ?int $newHeight = null,
     int $mode = B_IMG_SIZE_RATIO
 ): array {
     return ImageHelper::size($originalWidth, $originalHeight, $newWidth, $newHeight, $mode);
@@ -477,8 +477,12 @@ function b_img_size(
  *
  * @return resource|GdImage
  */
-function b_img_resize($img, int $newWidth = null, int $newHeight = null, int $mode = B_IMG_SIZE_RATIO)
-{
+function b_img_resize(
+    $img,
+    ?int $newWidth = null,
+    ?int $newHeight = null,
+    int $mode = B_IMG_SIZE_RATIO
+) {
     return ImageHelper::resize($img, $newWidth, $newHeight, $mode);
 }
 
@@ -491,7 +495,10 @@ function b_img_resize($img, int $newWidth = null, int $newHeight = null, int $mo
  *
  * @return resource|GdImage
  */
-function b_img_support($img, int $newWidth = null, int $newHeight = null)
-{
+function b_img_support(
+    $img,
+    ?int $newWidth = null,
+    ?int $newHeight = null
+) {
     return ImageHelper::resizeSupport($img, $newWidth, $newHeight);
 }
