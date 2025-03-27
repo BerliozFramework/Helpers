@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.11.1] - 2025-03-27
+
+### Fixed
+
+- Missing `b_array_nested()` bootstrap function
+
 ## [1.11.0] - 2025-03-27
 
 ### Added

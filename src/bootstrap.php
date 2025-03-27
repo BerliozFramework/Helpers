@@ -140,6 +140,18 @@ function b_array_simple(array $array, ?string $prefix = null): array
     return ArrayHelper::simpleArray($array, $prefix = null);
 }
 
+/**
+ * Multi-dimensional array from flat array.
+ *
+ * @param array $array
+ *
+ * @return array
+ */
+function b_array_nested(array $array): array
+{
+    return ArrayHelper::nestedArray($array);
+}
+
 
 ///////////////////
 /// FILE HELPER ///
