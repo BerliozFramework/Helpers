@@ -21,8 +21,6 @@ use InvalidArgumentException;
 use SimpleXMLElement;
 use Traversable;
 
-use function array_is_list;
-
 /**
  * Class ArrayHelper.
  *
@@ -242,6 +240,17 @@ final class ArrayHelper
         return $arraySrc;
     }
 
+    private static function parseKey(string $key): array
+    {
+        $normalized = preg_replace('/\.([^.\[\]]+)/', '[$1]', $key);
+        preg_match_all('/([^\[\]]+)/', $normalized, $matches);
+        if (substr($key, -2) == '[]') {
+            $matches[1][] = '';
+        }
+
+        return $matches[1];
+    }
+
     /**
      * Traverse array with path and return if path exists.
      *
@@ -252,7 +261,7 @@ final class ArrayHelper
      */
     public static function traverseExists(iterable &$mixed, string $path): bool
     {
-        $path = explode('.', $path);
+        $path = self::parseKey($path);
 
         $temp = &$mixed;
         foreach ($path as $key) {
@@ -287,7 +296,7 @@ final class ArrayHelper
      */
     public static function traverseGet(iterable &$mixed, string $path, $default = null)
     {
-        $path = explode('.', $path);
+        $path = self::parseKey($path);
 
         $temp = &$mixed;
         foreach ($path as $key) {
@@ -322,12 +331,19 @@ final class ArrayHelper
      */
     public static function traverseSet(iterable &$mixed, string $path, $value): bool
     {
-        $path = explode('.', $path);
+        $path = self::parseKey($path);
 
         $temp = &$mixed;
         foreach ($path as $key) {
             if (null !== $temp && !is_iterable($temp)) {
                 return false;
+            }
+
+            if ($key === '') {
+                $temp[] = null;
+                end($temp);
+                $temp = &$temp[key($temp)];
+                continue;
             }
 
             if (!isset($temp[$key])) {
@@ -351,7 +367,7 @@ final class ArrayHelper
      */
     public static function simpleArray(array $array, ?string $prefix = null): array
     {
-        $metaData = [];
+        $output = [];
 
         foreach ($array as $key => $value) {
             // Prefix key if necessary
@@ -360,13 +376,78 @@ final class ArrayHelper
             }
 
             if (is_array($value)) {
-                $metaData = array_merge($metaData, self::simpleArray($value, $key));
+                $output = array_merge($output, self::simpleArray($value, $key));
                 continue;
             }
 
-            $metaData[$key] = $value;
+            $output[$key] = $value;
         }
 
-        return $metaData;
+        return $output;
+    }
+
+    /**
+     * Transform simple level array to multidimensional.
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public static function nestedArray(array $array): array
+    {
+        $output = [];
+
+        foreach ($array as $key => $value) {
+            // Normalize dot notation to bracket notation
+            $normalized = preg_replace('/\.([^.\[\]]+)/', '[$1]', $key);
+
+            // Extract segments (ex: foo[bar][baz] → ['foo', 'bar', 'baz'])
+            preg_match_all('/([^\[\]]+)/', $normalized, $matches);
+            $segments = $matches[1];
+
+            $ref = &$output;
+
+            foreach ($segments as $i => $segment) {
+                $isLast = ($i === count($segments) - 1);
+
+                if ($isLast) {
+                    if ($segment === '') {
+                        $ref[] = $value;
+                        continue;
+                    }
+
+                    if (is_numeric($segment)) {
+                        $ref[(int)$segment] = $value;
+                        continue;
+                    }
+
+                    $ref[$segment] = $value;
+                    continue;
+                }
+
+                if ($segment === '') {
+                    $ref[] = [];
+                    end($ref);
+                    $ref = &$ref[key($ref)];
+                    continue;
+                }
+
+                if (is_numeric($segment)) {
+                    $segment = (int)$segment;
+                    if (!isset($ref[$segment]) || !is_array($ref[$segment])) {
+                        $ref[$segment] = [];
+                    }
+                    $ref = &$ref[$segment];
+                    continue;
+                }
+
+                if (!isset($ref[$segment]) || !is_array($ref[$segment])) {
+                    $ref[$segment] = [];
+                }
+                $ref = &$ref[$segment];
+            }
+        }
+
+        return $output;
     }
 }

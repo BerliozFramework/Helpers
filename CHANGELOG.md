@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.11.0] - 2025-03-27
+
+### Added
+
+- New method `ArrayHelper::nestedArray()` to transform simple array into multidimensional array
+
+### Changed
+
+- Complex paths allowed for `ArrayHelper::traverse*` methods
+
 ## [1.10.0] - 2025-03-14
 
 ### Changed

@@ -299,6 +299,7 @@ class ArrayHelperTest extends TestCase
         $this->assertTrue(ArrayHelper::traverseExists($tArray, 'foo2.foo6.foo9'));
         $this->assertFalse(ArrayHelper::traverseExists($tArray, 'bar'));
         $this->assertFalse(ArrayHelper::traverseExists($tArray, 'foo2.foo999.foo8'));
+        $this->assertFalse(ArrayHelper::traverseExists($tArray, 'foo2[foo999][foo8]'));
         $this->assertFalse(ArrayHelper::traverseExists($tArray, 'foo3.foo4'));
         $this->assertFalse(ArrayHelper::traverseExists($tArray, 'foo.bar.foo'));
         $this->assertFalse(ArrayHelper::traverseExists($tArray, 'bar.foo'));
@@ -324,6 +325,7 @@ class ArrayHelperTest extends TestCase
         $this->assertEquals(null, ArrayHelper::traverseGet($tArray, 'foo2.foo6.foo9'));
         $this->assertEquals(null, ArrayHelper::traverseGet($tArray, 'foo2.foo999.foo8'));
         $this->assertEquals('bar', ArrayHelper::traverseGet($tArray, 'foo2.foo999.foo8', 'bar'));
+        $this->assertEquals('bar', ArrayHelper::traverseGet($tArray, 'foo2[foo999].foo8', 'bar'));
         $this->assertEquals(null, ArrayHelper::traverseGet($tArray, 'foo3.foo4'));
         $this->assertEquals(null, ArrayHelper::traverseGet($tArray, 'foo.bar.foo'));
         $this->assertEquals('bar', ArrayHelper::traverseGet($tArray, 'bar.foo', 'bar'));
@@ -344,13 +346,37 @@ class ArrayHelperTest extends TestCase
         ];
 
         $this->assertTrue(ArrayHelper::traverseSet($tArray, 'foo', 'bob'));
-        $this->assertEquals('bob', ArrayHelper::traverseGet($tArray, 'foo'));
         $this->assertTrue(ArrayHelper::traverseSet($tArray, 'foo2.foo6.foo8', 'bob8'));
-        $this->assertEquals('bob8', ArrayHelper::traverseGet($tArray, 'foo2.foo6.foo8'));
         $this->assertTrue(ArrayHelper::traverseSet($tArray, 'foo2.foo999.foo8', 'bob999'));
-        $this->assertEquals('bob999', ArrayHelper::traverseGet($tArray, 'foo2.foo999.foo8'));
         $this->assertFalse(ArrayHelper::traverseSet($tArray, 'foo.bar.foo', 'bar'));
-        $this->assertTrue(ArrayHelper::traverseSet($tArray, 'bar.foo', 'baz'));
+        $this->assertTrue(ArrayHelper::traverseSet($tArray, 'bar[foo]', 'baz'));
+        $this->assertTrue(ArrayHelper::traverseSet($tArray, 'foo3[]', 'foo3.1'));
+        $this->assertTrue(ArrayHelper::traverseSet($tArray, 'foo3[]', 'foo3.2'));
+
+        $this->assertEquals(
+            [
+                'foo' => 'bob',
+                'foo2' => [
+                    'foo3' => ['foo4' => 'bar4'],
+                    'foo5' => 'bar5',
+                    'foo6' => [
+                        'foo7' => 'bar7',
+                        'foo8' => 'bob8',
+                    ],
+                    'foo999' => [
+                        'foo8' => 'bob999'
+                    ]
+                ],
+                'bar' => [
+                    'foo' => 'baz',
+                ],
+                'foo3' => [
+                    'foo3.1',
+                    'foo3.2'
+                ]
+            ],
+            $tArray,
+        );
     }
 
     public function testSimpleArray()
@@ -386,6 +412,38 @@ class ArrayHelperTest extends TestCase
                 'prefix.foo2.foo6.foo8' => 'bar8',
             ],
             ArrayHelper::simpleArray($arr, 'prefix'),
+        );
+    }
+
+    public function testNestedArray()
+    {
+        $arr = [
+            'foo' => 'bar',
+            'foo2.foo3.foo4' => 'bar4',
+            'foo2.foo5' => 'bar5',
+            'foo2.foo6.foo7' => 'bar7',
+            'foo2.foo6[foo8]' => 'bar8',
+            'foo2.foo6.foo9[0]' => 'bar9',
+            'foo2[foo6].foo9[1]' => 'bar9bis',
+        ];
+
+        $this->assertEquals(
+            [
+                'foo' => 'bar',
+                'foo2' => [
+                    'foo3' => ['foo4' => 'bar4'],
+                    'foo5' => 'bar5',
+                    'foo6' => [
+                        'foo7' => 'bar7',
+                        'foo8' => 'bar8',
+                        'foo9' => [
+                            'bar9',
+                            'bar9bis'
+                        ]
+                    ],
+                ],
+            ],
+            ArrayHelper::nestedArray($arr),
         );
     }
 }
