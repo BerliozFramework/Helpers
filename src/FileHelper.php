@@ -38,7 +38,7 @@ final class FileHelper
             return (string)$size;
         }
 
-        // PB
+        // Po
         if (($size / pow(1024, 5)) >= 1) {
             return sprintf(
                 "%s Po",
@@ -46,7 +46,7 @@ final class FileHelper
             );
         }
 
-        // TB
+        // To
         if (($size / pow(1024, 4)) >= 1) {
             return sprintf(
                 "%s To",
@@ -54,7 +54,7 @@ final class FileHelper
             );
         }
 
-        // GB
+        // Go
         if (($size / pow(1024, 3)) >= 1) {
             return sprintf(
                 "%s Go",
@@ -62,7 +62,7 @@ final class FileHelper
             );
         }
 
-        // MB
+        // Mo
         if (($size / pow(1024, 2)) >= 1) {
             return sprintf(
                 "%s Mo",
@@ -70,7 +70,7 @@ final class FileHelper
             );
         }
 
-        // KB
+        // Ko
         if (($size / pow(1024, 1)) >= 1) {
             return sprintf(
                 "%s Ko",
@@ -78,7 +78,7 @@ final class FileHelper
             );
         }
 
-        // Bytes
+        // Octet(s)
         return sprintf("%s octet%s", $size, $size <= 1 ? "" : "s");
     }
 
