@@ -41,7 +41,7 @@ final class FileHelper
         // PB
         if (($size / pow(1024, 5)) >= 1) {
             return sprintf(
-                "%s PB",
+                "%s Po",
                 round($size / pow(1024, 5), $precision)
             );
         }
@@ -49,7 +49,7 @@ final class FileHelper
         // TB
         if (($size / pow(1024, 4)) >= 1) {
             return sprintf(
-                "%s TB",
+                "%s To",
                 round($size / pow(1024, 4), $precision)
             );
         }
@@ -57,7 +57,7 @@ final class FileHelper
         // GB
         if (($size / pow(1024, 3)) >= 1) {
             return sprintf(
-                "%s GB",
+                "%s Go",
                 round($size / pow(1024, 3), $precision)
             );
         }
@@ -65,7 +65,7 @@ final class FileHelper
         // MB
         if (($size / pow(1024, 2)) >= 1) {
             return sprintf(
-                "%s MB",
+                "%s Mo",
                 round($size / pow(1024, 2), $precision)
             );
         }
@@ -73,13 +73,13 @@ final class FileHelper
         // KB
         if (($size / pow(1024, 1)) >= 1) {
             return sprintf(
-                "%s KB",
+                "%s Ko",
                 round($size / pow(1024, 1), $precision)
             );
         }
 
         // Bytes
-        return sprintf("%s bytes", $size);
+        return sprintf("%s octet%s", $size, $size <= 1 ? "" : "s");
     }
 
     /**
