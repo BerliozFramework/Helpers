@@ -20,16 +20,19 @@ class FileHelperTest extends TestCase
     public function testHumanFileSize()
     {
         $this->assertEquals('foo', FileHelper::humanFileSize('foo'));
-        $this->assertEquals('200 bytes', FileHelper::humanFileSize(200));
-        $this->assertEquals('1 KB', FileHelper::humanFileSize(1024));
-        $this->assertEquals('976.56 KB', FileHelper::humanFileSize(1000000));
-        $this->assertEquals('976.563 KB', FileHelper::humanFileSize(1000000, 3));
-        $this->assertEquals('977 KB', FileHelper::humanFileSize(1000000, 0));
-        $this->assertEquals('2 MB', FileHelper::humanFileSize(2097152));
-        $this->assertEquals('1 GB', FileHelper::humanFileSize(pow(1024, 3)));
-        $this->assertEquals('1 TB', FileHelper::humanFileSize(pow(1024, 4)));
-        $this->assertEquals('1 PB', FileHelper::humanFileSize(pow(1024, 5)));
-        $this->assertEquals('1024 PB', FileHelper::humanFileSize(pow(1024, 6)));
+        $this->assertEquals('0 octet', FileHelper::humanFileSize(0));
+        $this->assertEquals('1 octet', FileHelper::humanFileSize(1));
+        $this->assertEquals('2 octets', FileHelper::humanFileSize(2));
+        $this->assertEquals('200 octets', FileHelper::humanFileSize(200));
+        $this->assertEquals('1 Ko', FileHelper::humanFileSize(1024));
+        $this->assertEquals('976.56 Ko', FileHelper::humanFileSize(1000000));
+        $this->assertEquals('976.563 Ko', FileHelper::humanFileSize(1000000, 3));
+        $this->assertEquals('977 Ko', FileHelper::humanFileSize(1000000, 0));
+        $this->assertEquals('2 Mo', FileHelper::humanFileSize(2097152));
+        $this->assertEquals('1 Go', FileHelper::humanFileSize(pow(1024, 3)));
+        $this->assertEquals('1 To', FileHelper::humanFileSize(pow(1024, 4)));
+        $this->assertEquals('1 Po', FileHelper::humanFileSize(pow(1024, 5)));
+        $this->assertEquals('1024 Po', FileHelper::humanFileSize(pow(1024, 6)));
     }
 
     public function testSizeFromIni()
