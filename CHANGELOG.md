@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.11.2] - 2025-05-12
+
+### Fixed
+
+- Use french units for file size
+
 ## [1.11.1] - 2025-03-27
 
 ### Fixed

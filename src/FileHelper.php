@@ -25,7 +25,7 @@ use RuntimeException;
 final class FileHelper
 {
     /**
-     * Get a human see file size.
+     * Get a file size a human can read (french units).
      *
      * @param int|float $size
      * @param int $precision
