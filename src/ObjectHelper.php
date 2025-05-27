@@ -46,19 +46,6 @@ final class ObjectHelper
 
         $reflectionObject = new ReflectionObject($object);
 
-        // If property is public
-        if ($exists = ($reflectionObject->hasProperty($property) && $reflectionObject->getProperty($property)->isPublic(
-            ))) {
-            return $object->$property;
-        }
-
-        // If magic methods __get() and __isset() are declared
-        if ($reflectionObject->hasMethod('__isset') && $reflectionObject->hasMethod('__get')) {
-            if ($exists = $object->__isset($property)) {
-                return $object->__get($property);
-            }
-        }
-
         // Different naming convention
         $methods = [
             sprintf('get%s', StringHelper::pascalCase($property)),
@@ -72,6 +59,19 @@ final class ObjectHelper
             if ($exists = ($reflectionObject->hasMethod($method) &&
                 $reflectionObject->getMethod($method)->isPublic())) {
                 return $reflectionObject->getMethod($method)->invoke($object);
+            }
+        }
+
+        // If property is public
+        $exists = $reflectionObject->hasProperty($property) && $reflectionObject->getProperty($property)->isPublic();
+        if ($exists) {
+            return $object->$property;
+        }
+
+        // If magic methods __get() and __isset() are declared
+        if ($reflectionObject->hasMethod('__isset') && $reflectionObject->hasMethod('__get')) {
+            if ($exists = $object->__isset($property)) {
+                return $object->__get($property);
             }
         }
 
@@ -110,6 +110,21 @@ final class ObjectHelper
 
         $reflectionObject = new ReflectionObject($object);
 
+        // Different naming convention
+        $methods = [
+            sprintf('set%s', StringHelper::pascalCase($property)),
+            sprintf('set_%s', StringHelper::snakeCase($property))
+        ];
+
+        // Test different formats
+        foreach ($methods as $method) {
+            if ($reflectionObject->hasMethod($method) &&
+                $reflectionObject->getMethod($method)->isPublic()) {
+                $reflectionObject->getMethod($method)->invoke($object, $value);
+                return true;
+            }
+        }
+
         // If property is public
         if ($reflectionObject->hasProperty($property) &&
             $reflectionObject->getProperty($property)->isPublic()) {
@@ -123,21 +138,6 @@ final class ObjectHelper
             if ($object->__isset($property)) {
                 $object->__set($property, $value);
 
-                return true;
-            }
-        }
-
-        // Different naming convention
-        $methods = [
-            sprintf('set%s', StringHelper::pascalCase($property)),
-            sprintf('set_%s', StringHelper::snakeCase($property))
-        ];
-
-        // Test different formats
-        foreach ($methods as $method) {
-            if ($reflectionObject->hasMethod($method) &&
-                $reflectionObject->getMethod($method)->isPublic()) {
-                $reflectionObject->getMethod($method)->invoke($object, $value);
                 return true;
             }
         }

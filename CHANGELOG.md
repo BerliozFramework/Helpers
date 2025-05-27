@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [1.12.0] - 2025-05-27
+
+### Changed
+
+- Order of resolution for the getter/setter of object properties, used the methods before the property
+
 ## [1.11.1] - 2025-03-27
 
 ### Fixed
