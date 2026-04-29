@@ -10,6 +10,11 @@ Many PHP functions used in the Berlioz framework, which you can use in your deve
 
 ## Array
 
+All array path methods support the following path formats:
+- Dot notation: `foo.bar.baz`
+- Bracket notation: `foo[bar][baz]`
+- JSON Pointer ([RFC 6901](https://www.rfc-editor.org/rfc/rfc6901)): `/foo/bar/baz`
+
 - `b_array_is_list(array $array): bool`
 
   Is sequential array?
@@ -40,9 +45,17 @@ Many PHP functions used in the Berlioz framework, which you can use in your deve
 
   Traverse array with path and set value.
 
+- `b_array_traverse_unset(&$mixed, string $path): bool`
+
+  Traverse array with path and unset value.
+
 - `b_array_simple(array $array, ?string $prefix = null): array`
 
   Simplify a multidimensional array to simple.
+
+- `b_array_nested(array $array): array`
+
+  Transform a simple array with dot/bracket notation keys into a multidimensional array.
 
 ## File
 
