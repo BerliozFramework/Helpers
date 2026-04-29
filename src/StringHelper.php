@@ -203,10 +203,10 @@ final class StringHelper
 %Six
 EOT;
 
+        $str = preg_replace($regex, ' ', $str);
+
         // Reset PHP configuration value
         ini_set('pcre.recursion_limit', $oldPcreRecursionLimit);
-
-        $str = preg_replace($regex, ' ', $str);
 
         return $str;
     }
