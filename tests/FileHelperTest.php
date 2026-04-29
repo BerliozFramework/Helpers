@@ -201,4 +201,22 @@ class FileHelperTest extends TestCase
             stream_get_contents($resource, -1, 0)
         );
     }
+
+    public function testFtruncateWithLargeData()
+    {
+        $resource = fopen('php://memory', 'w+');
+
+        // Create data larger than the internal buffer size (8192 bytes)
+        $prefix = 'HEAD';
+        $toRemove = str_repeat('X', 100);
+        $suffix = str_repeat('A', 20000);
+        fwrite($resource, $prefix . $toRemove . $suffix);
+
+        // Remove the 100 'X' characters at offset 4
+        FileHelper::ftruncate($resource, 100, 4);
+
+        $result = stream_get_contents($resource, -1, 0);
+        $this->assertEquals(strlen($prefix) + strlen($suffix), strlen($result));
+        $this->assertEquals($prefix . $suffix, $result);
+    }
 }

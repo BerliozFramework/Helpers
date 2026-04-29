@@ -24,6 +24,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Changed
 
 - `StringHelper::random()` now uses `random_int()` (CSPRNG) instead of `mt_rand()` for cryptographically secure random string generation
+- `FileHelper::ftruncate()` now uses buffered reads (8KB) instead of byte-by-byte I/O for significantly better performance on large files
 
 ## [1.12.0] - 2025-05-27
 

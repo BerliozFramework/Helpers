@@ -315,18 +315,21 @@ final class FileHelper
             throw new RuntimeException('Unable to get length of resource');
         }
 
-        // Shift data
-        for ($pos = $offset; $pos < $totalLength - $size; $pos++) {
+        // Shift data using buffered reads
+        $bufferSize = 8192;
+        for ($pos = $offset; $pos < $totalLength - $size; $pos += $bufferSize) {
+            $readLength = min($bufferSize, $totalLength - $size - $pos);
+
             if (-1 == fseek($resource, $pos + $size)) {
                 return false;
             }
 
-            if (false === ($chr = fread($resource, 1))) {
+            if (false === ($data = fread($resource, $readLength))) {
                 return false;
             }
 
             fseek($resource, $pos);
-            fwrite($resource, $chr);
+            fwrite($resource, $data);
         }
 
         return ftruncate($resource, $totalLength - $size);
