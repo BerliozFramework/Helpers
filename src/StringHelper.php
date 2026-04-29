@@ -81,32 +81,32 @@ final class StringHelper
         if ($needAllRequiredParameters === true) {
             if ($withAlpha || $onlyLowerCase) {
                 // Lower case
-                $str[] = $alpha_lowercase[mt_rand(1, strlen($alpha_lowercase)) - 1];
+                $str[] = $alpha_lowercase[random_int(0, strlen($alpha_lowercase) - 1)];
                 $length--;
 
                 // Upper case
                 if ($onlyLowerCase === false) {
-                    $str[] = $alpha_uppercase[mt_rand(1, strlen($alpha_uppercase)) - 1];
+                    $str[] = $alpha_uppercase[random_int(0, strlen($alpha_uppercase) - 1)];
                     $length--;
                 }
             }
 
             // Numeric
             if ($withNumeric === true) {
-                $str[] = $numeric[mt_rand(1, strlen($numeric)) - 1];
+                $str[] = $numeric[random_int(0, strlen($numeric) - 1)];
                 $length--;
             }
 
             // Special characters
             if ($withSpecialCharacters === true) {
-                $str[] = $specials[mt_rand(1, strlen($specials)) - 1];
+                $str[] = $specials[random_int(0, strlen($specials) - 1)];
                 $length--;
             }
         }
 
         // Generate the main string
         for ($i = 0; $i < $length; $i++) {
-            $str[] = $source[mt_rand(1, $n) - 1];
+            $str[] = $source[random_int(0, $n - 1)];
         }
 
         // Shuffle the string

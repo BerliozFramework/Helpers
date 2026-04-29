@@ -21,6 +21,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - `StringHelper::minifyHtml()` was restoring `pcre.recursion_limit` before executing the regex, making the override ineffective
 - `StringHelper::minifyHtml()` Windows detection used `PHP_OS == 'WIN'` which never matches (`PHP_OS` is `WINNT`), replaced with `PHP_OS_FAMILY`
 
+### Changed
+
+- `StringHelper::random()` now uses `random_int()` (CSPRNG) instead of `mt_rand()` for cryptographically secure random string generation
+
 ## [1.12.0] - 2025-05-27
 
 ### Changed
