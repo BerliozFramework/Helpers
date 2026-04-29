@@ -242,7 +242,7 @@ final class ArrayHelper
 
     private static function parseKey(string $key): array
     {
-        if (str_starts_with($key, '/')) {
+        if ('/' === substr($key, 0, 1)) {
             return self::parseJsonPointer($key);
         }
 
@@ -267,8 +267,10 @@ final class ArrayHelper
         $tokens = explode('/', substr($pointer, 1));
 
         return array_map(
-            fn(string $token): string => str_replace(['~1', '~0'], ['/', '~'], $token),
-            $tokens,
+            function (string $token): string {
+                return str_replace(['~1', '~0'], ['/', '~'], $token);
+            },
+            $tokens
         );
     }
 
