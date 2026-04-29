@@ -91,6 +91,41 @@ class ArrayHelperTest extends TestCase
         );
     }
 
+    public function testColumnWithNonClosureIndexKey()
+    {
+        // Test with Closure column_key and string index_key (exercises the non-Closure index_key path)
+        $array = [
+            ['key1' => 'Foo', 'key2' => 'Bar'],
+            ['key1' => 'Baz', 'key2' => 'Qux'],
+        ];
+
+        $result = ArrayHelper::column(
+            $array,
+            function ($value) {
+                return $value['key2'];
+            },
+            'key1'
+        );
+
+        $this->assertEquals(['Foo' => 'Bar', 'Baz' => 'Qux'], $result);
+
+        // Test with objects
+        $array = [
+            (object)['key1' => 'Foo', 'key2' => 'Bar'],
+            (object)['key1' => 'Baz', 'key2' => 'Qux'],
+        ];
+
+        $result = ArrayHelper::column(
+            $array,
+            function ($value) {
+                return $value->key2;
+            },
+            'key1'
+        );
+
+        $this->assertEquals(['Foo' => 'Bar', 'Baz' => 'Qux'], $result);
+    }
+
     public function testColumnWithClosure()
     {
         $array = [

@@ -136,10 +136,10 @@ final class ArrayHelper
 
                 if (!$index_key instanceof Closure) {
                     if (is_object($value)) {
-                        $finalValue = $value->$index_key;
+                        $finalIndex = $value->$index_key;
                     }
                     if (is_array($value)) {
-                        $finalValue = $value[$index_key];
+                        $finalIndex = $value[$index_key];
                     }
                 }
             }

@@ -11,6 +11,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - New method `ArrayHelper::traverseUnset()` to unset a value in a nested array using dot/bracket path notation
 - JSON Pointer (RFC 6901) path support for `ArrayHelper::traverse*()` methods
 
+### Fixed
+
+- `ArrayHelper::column()` with non-Closure `$index_key` was incorrectly assigning to `$finalValue` instead of `$finalIndex`
+
 ## [1.12.0] - 2025-05-27
 
 ### Changed
