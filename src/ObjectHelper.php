@@ -83,7 +83,6 @@ final class ObjectHelper
 
                     return $reflectionObject->getMethod('__call')->invoke($object, $method);
                 } catch (BadMethodCallException $e) {
-                } finally {
                     $exists = false;
                 }
             }

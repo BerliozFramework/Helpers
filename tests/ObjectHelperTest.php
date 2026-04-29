@@ -78,6 +78,26 @@ class ObjectHelperTest extends TestCase
         $this->assertFalse($exists);
     }
 
+    public function testGetPropertyValueViaMagicCall()
+    {
+        $obj = new class() {
+            private $foo = 'bar';
+
+            public function __call($name, $args = [])
+            {
+                if ($name === 'getFoo') {
+                    return $this->foo;
+                }
+                throw new \BadMethodCallException(sprintf('Method "%s" does not exist', $name));
+            }
+        };
+
+        $exists = false;
+        $result = ObjectHelper::getPropertyValue($obj, 'foo', $exists);
+        $this->assertEquals('bar', $result);
+        $this->assertTrue($exists);
+    }
+
     public function testSetPropertyValue()
     {
         $obj = $this->provider();
