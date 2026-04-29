@@ -150,7 +150,7 @@ function b_array_traverse_unset(iterable &$mixed, string $path): bool
  */
 function b_array_simple(array $array, ?string $prefix = null): array
 {
-    return ArrayHelper::simpleArray($array, $prefix = null);
+    return ArrayHelper::simpleArray($array, $prefix);
 }
 
 /**

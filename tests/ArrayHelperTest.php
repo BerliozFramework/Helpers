@@ -703,6 +703,12 @@ class ArrayHelperTest extends TestCase
             ],
             ArrayHelper::simpleArray($arr, 'prefix'),
         );
+
+        // Verify bootstrap function also passes prefix correctly
+        $this->assertEquals(
+            ArrayHelper::simpleArray($arr, 'prefix'),
+            b_array_simple($arr, 'prefix'),
+        );
     }
 
     public function testNestedArray()
