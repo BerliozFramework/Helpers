@@ -379,6 +379,59 @@ class ArrayHelperTest extends TestCase
         );
     }
 
+    public function testTraverseUnset()
+    {
+        $tArray = [
+            'foo' => 'bar',
+            'foo2' => [
+                'foo3' => ['foo4' => 'bar4'],
+                'foo5' => 'bar5',
+                'foo6' => [
+                    'foo7' => 'bar7',
+                    'foo8' => 'bar8',
+                ],
+            ],
+            'foo9' => null,
+        ];
+
+        // Unset a top-level key
+        $this->assertTrue(ArrayHelper::traverseUnset($tArray, 'foo'));
+        $this->assertArrayNotHasKey('foo', $tArray);
+
+        // Unset a nested key (dot notation)
+        $this->assertTrue(ArrayHelper::traverseUnset($tArray, 'foo2.foo6.foo8'));
+        $this->assertArrayNotHasKey('foo8', $tArray['foo2']['foo6']);
+
+        // Unset a nested key (bracket notation)
+        $this->assertTrue(ArrayHelper::traverseUnset($tArray, 'foo2[foo6][foo7]'));
+        $this->assertEmpty($tArray['foo2']['foo6']);
+
+        // Unset a null value key
+        $this->assertTrue(ArrayHelper::traverseUnset($tArray, 'foo9'));
+        $this->assertArrayNotHasKey('foo9', $tArray);
+
+        // Unset a non-existent key returns false
+        $this->assertFalse(ArrayHelper::traverseUnset($tArray, 'nonexistent'));
+
+        // Unset a non-existent nested key returns false
+        $this->assertFalse(ArrayHelper::traverseUnset($tArray, 'foo2.foo999.foo8'));
+
+        // Traverse into scalar returns false
+        $this->assertFalse(ArrayHelper::traverseUnset($tArray, 'foo2.foo5.bar'));
+
+        // Verify remaining structure is intact
+        $this->assertEquals(
+            [
+                'foo2' => [
+                    'foo3' => ['foo4' => 'bar4'],
+                    'foo5' => 'bar5',
+                    'foo6' => [],
+                ],
+            ],
+            $tArray,
+        );
+    }
+
     public function testSimpleArray()
     {
         $arr = [

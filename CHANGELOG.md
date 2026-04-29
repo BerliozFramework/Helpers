@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 to [Semantic Versioning] (http://semver.org/). For change log format,
 use [Keep a Changelog] (http://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- New method `ArrayHelper::traverseUnset()` to unset a value in a nested array using dot/bracket path notation
+
 ## [1.12.0] - 2025-05-27
 
 ### Changed

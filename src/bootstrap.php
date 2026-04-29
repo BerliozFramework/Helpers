@@ -128,6 +128,19 @@ function b_array_traverse_set(iterable &$mixed, string $path, $value): bool
 }
 
 /**
+ * Traverse array with path and unset value.
+ *
+ * @param iterable $mixed Source
+ * @param string $path Path
+ *
+ * @return bool
+ */
+function b_array_traverse_unset(iterable &$mixed, string $path): bool
+{
+    return ArrayHelper::traverseUnset($mixed, $path);
+}
+
+/**
  * Simplify multi-dimensional array.
  *
  * @param array $array

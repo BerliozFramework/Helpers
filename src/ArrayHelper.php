@@ -358,6 +358,54 @@ final class ArrayHelper
     }
 
     /**
+     * Traverse array with path and unset value.
+     *
+     * @param iterable $mixed Source
+     * @param string $path Path
+     *
+     * @return bool
+     */
+    public static function traverseUnset(iterable &$mixed, string $path): bool
+    {
+        $path = self::parseKey($path);
+        $lastKey = array_pop($path);
+
+        $temp = &$mixed;
+        foreach ($path as $key) {
+            if (!is_iterable($temp)) {
+                return false;
+            }
+
+            if (is_array($temp) && !array_key_exists($key, $temp)) {
+                return false;
+            }
+
+            if (!is_array($temp) && !isset($temp[$key])) {
+                return false;
+            }
+
+            $temp = &$temp[$key];
+        }
+
+        if (!is_iterable($temp)) {
+            return false;
+        }
+
+        if (is_array($temp) && !array_key_exists($lastKey, $temp)) {
+            return false;
+        }
+
+        if (!is_array($temp) && !isset($temp[$lastKey])) {
+            return false;
+        }
+
+        unset($temp[$lastKey]);
+        unset($temp);
+
+        return true;
+    }
+
+    /**
      * Transform multidimensional array to simple level.
      *
      * @param array $array
