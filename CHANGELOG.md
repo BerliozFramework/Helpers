@@ -19,6 +19,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - `ObjectHelper::getPropertyValue()` always set `$exists` to `false` after a successful `__call()` due to `finally` block
 - `ImageHelper::resizeSupport()` was stretching the image to canvas size instead of centering it at original size
 - `StringHelper::minifyHtml()` was restoring `pcre.recursion_limit` before executing the regex, making the override ineffective
+- `StringHelper::minifyHtml()` Windows detection used `PHP_OS == 'WIN'` which never matches (`PHP_OS` is `WINNT`), replaced with `PHP_OS_FAMILY`
 
 ## [1.12.0] - 2025-05-27
 

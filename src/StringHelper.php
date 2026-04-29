@@ -179,7 +179,7 @@ final class StringHelper
     {
         // Save and change PHP configuration value
         $oldPcreRecursionLimit = ini_get('pcre.recursion_limit');
-        ini_set('pcre.recursion_limit', PHP_OS == 'WIN' ? '524' : '16777');
+        ini_set('pcre.recursion_limit', PHP_OS_FAMILY === 'Windows' ? '524' : '16777');
 
         $regex = <<<EOT
 %# Collapse whitespace everywhere but in blacklisted elements.
