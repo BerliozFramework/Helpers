@@ -233,7 +233,7 @@ final class FileHelper
     {
         $path = str_replace(['\\', '/'], '/', $path);
 
-        return preg_replace('#/{2,}#', '', $path);
+        return preg_replace('#/{2,}#', '/', $path);
     }
 
     /**

@@ -14,6 +14,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Fixed
 
 - `ArrayHelper::column()` with non-Closure `$index_key` was incorrectly assigning to `$finalValue` instead of `$finalIndex`
+- `FileHelper::uniformizePathSeparator()` was removing double slashes instead of collapsing them, corrupting paths
 
 ## [1.12.0] - 2025-05-27
 

@@ -70,6 +70,9 @@ class FileHelperTest extends TestCase
             ['/foo/bar/', '/foo/bar.html', '/foo/bar.html'],
             ['/foo/bar/', '/foo/bar/baz/qux.html', '/foo/bar/baz/qux.html'],
             ['/foo/ba/', '/foo/ba/baz/qux.html', '/foo/ba/baz/qux.html'],
+            // Paths with double slashes should be normalized
+            ['foo//bar//index.md', 'baz.md', '/foo/bar/baz.md'],
+            ['foo//bar/index.md', '../qux.md', '/foo/qux.md'],
         ];
     }
 
