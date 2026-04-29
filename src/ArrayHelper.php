@@ -242,6 +242,10 @@ final class ArrayHelper
 
     private static function parseKey(string $key): array
     {
+        if (str_starts_with($key, '/')) {
+            return self::parseJsonPointer($key);
+        }
+
         $normalized = preg_replace('/\.([^.\[\]]+)/', '[$1]', $key);
         preg_match_all('/([^\[\]]+)/', $normalized, $matches);
         if (substr($key, -2) == '[]') {
@@ -249,6 +253,23 @@ final class ArrayHelper
         }
 
         return $matches[1];
+    }
+
+    /**
+     * Parse a JSON Pointer (RFC 6901) into an array of reference tokens.
+     *
+     * @param string $pointer
+     *
+     * @return array
+     */
+    private static function parseJsonPointer(string $pointer): array
+    {
+        $tokens = explode('/', substr($pointer, 1));
+
+        return array_map(
+            fn(string $token): string => str_replace(['~1', '~0'], ['/', '~'], $token),
+            $tokens,
+        );
     }
 
     /**
@@ -339,7 +360,7 @@ final class ArrayHelper
                 return false;
             }
 
-            if ($key === '') {
+            if ($key === '' || $key === '-') {
                 $temp[] = null;
                 end($temp);
                 $temp = &$temp[key($temp)];

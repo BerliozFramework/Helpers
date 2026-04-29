@@ -432,6 +432,208 @@ class ArrayHelperTest extends TestCase
         );
     }
 
+    private static function getTraverseTestArray(): array
+    {
+        return [
+            'foo' => 'bar',
+            'foo2' => [
+                'foo3' => ['foo4' => 'bar4'],
+                'foo5' => 'bar5',
+                'foo6' => [
+                    'foo7' => 'bar7',
+                    'foo8' => 'bar8',
+                    'foo9' => null,
+                ],
+            ],
+            'special/key' => 'slash-value',
+            'special~key' => 'tilde-value',
+            'list' => ['first', 'second', 'third'],
+        ];
+    }
+
+    public function traverseExistsProvider(): array
+    {
+        return [
+            // Dot notation
+            'dot: top-level' => ['foo', true],
+            'dot: nested 2 levels' => ['foo2.foo6', true],
+            'dot: nested 3 levels' => ['foo2.foo6.foo8', true],
+            'dot: null value exists' => ['foo2.foo6.foo9', true],
+            'dot: nonexistent top-level' => ['bar', false],
+            'dot: missing intermediate' => ['foo2.foo999.foo8', false],
+            'dot: wrong level' => ['foo3.foo4', false],
+            'dot: traverse into scalar' => ['foo.bar.foo', false],
+            'dot: nonexistent nested' => ['bar.foo', false],
+
+            // Bracket notation
+            'bracket: missing intermediate' => ['foo2[foo999][foo8]', false],
+
+            // JSON Pointer
+            'pointer: top-level' => ['/foo', true],
+            'pointer: nested 2 levels' => ['/foo2/foo6', true],
+            'pointer: nested 3 levels' => ['/foo2/foo6/foo8', true],
+            'pointer: null value exists' => ['/foo2/foo6/foo9', true],
+            'pointer: nonexistent top-level' => ['/bar', false],
+            'pointer: missing intermediate' => ['/foo2/foo999/foo8', false],
+            'pointer: traverse into scalar' => ['/foo/bar/foo', false],
+            'pointer: escape slash ~1' => ['/special~1key', true],
+            'pointer: escape tilde ~0' => ['/special~0key', true],
+            'pointer: numeric index' => ['/list/0', true],
+            'pointer: numeric index OOB' => ['/list/5', false],
+        ];
+    }
+
+    /**
+     * @dataProvider traverseExistsProvider
+     */
+    public function testTraverseExistsWithProvider(string $path, bool $expected): void
+    {
+        $tArray = self::getTraverseTestArray();
+        $this->assertSame($expected, ArrayHelper::traverseExists($tArray, $path));
+    }
+
+    public function traverseGetProvider(): array
+    {
+        return [
+            // Dot notation
+            'dot: top-level' => ['foo', null, 'bar'],
+            'dot: nested' => ['foo2.foo6.foo8', null, 'bar8'],
+            'dot: null value' => ['foo2.foo6.foo9', null, null],
+            'dot: missing path' => ['foo2.foo999.foo8', null, null],
+            'dot: missing with default' => ['foo2.foo999.foo8', 'dflt', 'dflt'],
+            'dot: nonexistent' => ['foo3.foo4', null, null],
+            'dot: traverse into scalar' => ['foo.bar.foo', null, null],
+            'dot: missing with default 2' => ['bar.foo', 'dflt', 'dflt'],
+
+            // Bracket notation
+            'bracket: missing with default' => ['foo2[foo999].foo8', 'dflt', 'dflt'],
+
+            // JSON Pointer
+            'pointer: top-level' => ['/foo', null, 'bar'],
+            'pointer: nested' => ['/foo2/foo6/foo8', null, 'bar8'],
+            'pointer: null value' => ['/foo2/foo6/foo9', null, null],
+            'pointer: missing path' => ['/foo2/foo999/foo8', null, null],
+            'pointer: missing with default' => ['/foo2/foo999/foo8', 'dflt', 'dflt'],
+            'pointer: traverse into scalar' => ['/foo/bar/foo', null, null],
+            'pointer: escape slash ~1' => ['/special~1key', null, 'slash-value'],
+            'pointer: escape tilde ~0' => ['/special~0key', null, 'tilde-value'],
+            'pointer: numeric index 0' => ['/list/0', null, 'first'],
+            'pointer: numeric index 2' => ['/list/2', null, 'third'],
+            'pointer: numeric index OOB' => ['/list/5', 'dflt', 'dflt'],
+        ];
+    }
+
+    /**
+     * @dataProvider traverseGetProvider
+     */
+    public function testTraverseGetWithProvider(string $path, $default, $expected): void
+    {
+        $tArray = self::getTraverseTestArray();
+        $this->assertSame($expected, ArrayHelper::traverseGet($tArray, $path, $default));
+    }
+
+    public function traverseSetProvider(): array
+    {
+        return [
+            // Dot notation
+            'dot: overwrite top-level' => ['foo', 'bob', true, 'bob'],
+            'dot: overwrite nested' => ['foo2.foo6.foo8', 'bob8', true, 'bob8'],
+            'dot: create nested path' => ['foo2.foo999.foo8', 'new', true, 'new'],
+            'dot: traverse into scalar' => ['foo.bar.baz', 'val', false, null],
+
+            // Bracket notation
+            'bracket: create nested' => ['bar[foo]', 'baz', true, 'baz'],
+
+            // JSON Pointer
+            'pointer: overwrite top-level' => ['/foo', 'bob', true, 'bob'],
+            'pointer: overwrite nested' => ['/foo2/foo6/foo8', 'bob8', true, 'bob8'],
+            'pointer: create nested path' => ['/foo2/foo999/foo8', 'new', true, 'new'],
+            'pointer: traverse into scalar' => ['/foo/bar/baz', 'val', false, null],
+        ];
+    }
+
+    /**
+     * @dataProvider traverseSetProvider
+     */
+    public function testTraverseSetWithProvider(string $path, $value, bool $expectedResult, $expectedValue): void
+    {
+        $tArray = self::getTraverseTestArray();
+        $this->assertSame($expectedResult, ArrayHelper::traverseSet($tArray, $path, $value));
+
+        if ($expectedResult) {
+            $this->assertSame($expectedValue, ArrayHelper::traverseGet($tArray, $path));
+        }
+    }
+
+    public function testTraverseSetAppend(): void
+    {
+        $tArray = self::getTraverseTestArray();
+
+        // Legacy append
+        $this->assertTrue(ArrayHelper::traverseSet($tArray, 'list[]', 'fourth'));
+        $this->assertSame('fourth', $tArray['list'][3]);
+
+        // JSON Pointer append with -
+        $this->assertTrue(ArrayHelper::traverseSet($tArray, '/list/-', 'fifth'));
+        $this->assertSame('fifth', $tArray['list'][4]);
+    }
+
+    public function traverseUnsetProvider(): array
+    {
+        return [
+            // Dot notation
+            'dot: top-level' => ['foo', true],
+            'dot: nested' => ['foo2.foo6.foo8', true],
+            'dot: null value' => ['foo2.foo6.foo9', true],
+            'dot: nonexistent' => ['nonexistent', false],
+            'dot: missing intermediate' => ['foo2.foo999.foo8', false],
+            'dot: traverse into scalar' => ['foo.bar.baz', false],
+
+            // Bracket notation
+            'bracket: nested' => ['foo2[foo6][foo7]', true],
+
+            // JSON Pointer
+            'pointer: top-level' => ['/foo', true],
+            'pointer: nested' => ['/foo2/foo6/foo8', true],
+            'pointer: nonexistent' => ['/nonexistent', false],
+            'pointer: missing intermediate' => ['/foo2/foo999/foo8', false],
+            'pointer: traverse into scalar' => ['/foo/bar/baz', false],
+            'pointer: escape slash ~1' => ['/special~1key', true],
+            'pointer: escape tilde ~0' => ['/special~0key', true],
+        ];
+    }
+
+    /**
+     * @dataProvider traverseUnsetProvider
+     */
+    public function testTraverseUnsetWithProvider(string $path, bool $expectedResult): void
+    {
+        $tArray = self::getTraverseTestArray();
+        $this->assertSame($expectedResult, ArrayHelper::traverseUnset($tArray, $path));
+
+        if ($expectedResult) {
+            $this->assertFalse(ArrayHelper::traverseExists($tArray, $path));
+        }
+    }
+
+    public function testJsonPointerEscaping(): void
+    {
+        $tArray = [
+            '~1' => 'tilde-one',
+            'a/b' => 'slash',
+            '' => 'empty-key',
+        ];
+
+        // ~01 decodes to literal key "~1" (~0 → ~, then 1 stays)
+        $this->assertSame('tilde-one', ArrayHelper::traverseGet($tArray, '/~01'));
+
+        // ~1 decodes to "/"
+        $this->assertSame('slash', ArrayHelper::traverseGet($tArray, '/a~1b'));
+
+        // Empty key (single slash = key "")
+        $this->assertSame('empty-key', ArrayHelper::traverseGet($tArray, '/'));
+    }
+
     public function testSimpleArray()
     {
         $arr = [

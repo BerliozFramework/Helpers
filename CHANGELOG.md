@@ -9,6 +9,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Added
 
 - New method `ArrayHelper::traverseUnset()` to unset a value in a nested array using dot/bracket path notation
+- JSON Pointer (RFC 6901) path support for `ArrayHelper::traverse*()` methods
 
 ## [1.12.0] - 2025-05-27
 
