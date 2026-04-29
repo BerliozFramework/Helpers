@@ -176,4 +176,32 @@ class ImageHelperTest extends TestCase
         $this->assertEquals(1024, $size['width']);
         $this->assertEquals(32, $size['height']);
     }
+
+    /**
+     * @requires extension gd
+     */
+    public function testResizeSupportCentersImageWithoutStretching()
+    {
+        // Create a small 10x10 red image
+        $source = imagecreatetruecolor(10, 10);
+        $red = imagecolorallocate($source, 255, 0, 0);
+        imagefill($source, 0, 0, $red);
+
+        // Resize support to 30x30 (should center the 10x10 image on white background)
+        $result = ImageHelper::resizeSupport($source, 30, 30);
+
+        $size = ImageHelper::getImageSize($result);
+        $this->assertEquals(30, $size['width']);
+        $this->assertEquals(30, $size['height']);
+
+        // Top-left corner (0,0) should be white background
+        $topLeft = imagecolorat($result, 0, 0);
+        $this->assertEquals(0xFFFFFF, $topLeft, 'Top-left corner should be white');
+
+        // Center pixel (15,15) should be red (from the original image)
+        $center = imagecolorat($result, 15, 15);
+        $this->assertEquals(0xFF0000, $center, 'Center should be red from original image');
+
+        imagedestroy($result);
+    }
 }

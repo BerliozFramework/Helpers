@@ -308,7 +308,7 @@ final class ImageHelper
         $white = imagecolorallocate($destination, 255, 255, 255);
         imagefill($destination, 0, 0, $white);
         // Resizing
-        imagecopyresampled($destination, $source, $dest_x, $dest_y, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagecopyresampled($destination, $source, $dest_x, $dest_y, 0, 0, $width, $height, $width, $height);
         // Erase source resource
         imagedestroy($source);
 

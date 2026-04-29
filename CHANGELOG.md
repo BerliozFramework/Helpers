@@ -17,6 +17,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - `FileHelper::uniformizePathSeparator()` was removing double slashes instead of collapsing them, corrupting paths
 - `b_array_simple()` bootstrap function was ignoring the `$prefix` parameter due to accidental reassignment to `null`
 - `ObjectHelper::getPropertyValue()` always set `$exists` to `false` after a successful `__call()` due to `finally` block
+- `ImageHelper::resizeSupport()` was stretching the image to canvas size instead of centering it at original size
 
 ## [1.12.0] - 2025-05-27
 
