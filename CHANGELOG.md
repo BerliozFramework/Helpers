@@ -6,10 +6,17 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-04-30
+
 ### Added
 
 - New method `ArrayHelper::traverseUnset()` to unset a value in a nested array using dot/bracket path notation
 - JSON Pointer (RFC 6901) path support for `ArrayHelper::traverse*()` methods
+
+### Changed
+
+- `StringHelper::random()` now uses `random_int()` (CSPRNG) instead of `mt_rand()` for cryptographically secure random string generation
+- `FileHelper::ftruncate()` now uses buffered reads (8KB) instead of byte-by-byte I/O for significantly better performance on large files
 
 ### Fixed
 
@@ -20,11 +27,6 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - `ImageHelper::resizeSupport()` was stretching the image to canvas size instead of centering it at original size
 - `StringHelper::minifyHtml()` was restoring `pcre.recursion_limit` before executing the regex, making the override ineffective
 - `StringHelper::minifyHtml()` Windows detection used `PHP_OS == 'WIN'` which never matches (`PHP_OS` is `WINNT`), replaced with `PHP_OS_FAMILY`
-
-### Changed
-
-- `StringHelper::random()` now uses `random_int()` (CSPRNG) instead of `mt_rand()` for cryptographically secure random string generation
-- `FileHelper::ftruncate()` now uses buffered reads (8KB) instead of byte-by-byte I/O for significantly better performance on large files
 
 ## [1.12.0] - 2025-05-27
 
