@@ -83,6 +83,55 @@ All array path methods support the following path formats:
 
   Truncate a part of file and shift rest of data.
 
+## Network
+
+- `b_net_validate_ip(string $ip): bool`
+
+  Is valid IP (v4 or v6)?
+
+- `b_net_validate_ipv4(string $ip): bool`
+
+  Is valid IP v4?
+
+- `b_net_validate_ipv6(string $ip): bool`
+
+  Is valid IP v6?
+
+- `b_net_ip_version(string $ip): ?int`
+
+  Get IP version (4, 6 or null if not a valid IP).
+
+- `b_net_validate_netmask(string $mask, ?int $version = null): bool`
+
+  Is valid netmask? Accepts a dotted netmask (e.g. `255.255.255.0`) or a CIDR prefix length (e.g. `24`). A valid netmask
+  must be a contiguous sequence of high bits.
+
+- `b_net_validate_cidr(string $cidr): bool`
+
+  Is valid CIDR notation (e.g. `192.168.1.0/24`, `2001:db8::/32`)?
+
+- `b_net_ip_in_network(string $ip, string $network): bool`
+
+  Is IP in network? The network can be expressed in CIDR notation (`192.168.1.0/24`) or as `ip mask`
+  (`192.168.1.0 255.255.255.0`).
+
+- `b_net_range(string $network): array`
+
+  Get network range. Returns an array with keys: `version`, `prefix`, `network`, `netmask`, `first`, `last`,
+  `broadcast` (IPv4 only, `null` for IPv6) and `count` (int, or numeric string for large IPv6 ranges).
+
+- `b_net_forwarded_for_parse(string $header): array`
+
+  Split and trim an `X-Forwarded-For` header value into a list of IP addresses, stripping optional ports (including the
+  `[ipv6]:port` form) and discarding invalid entries. The list keeps header order (left-most = claimed client,
+  right-most = closest proxy).
+
+- `b_net_client_ip(array $trustedProxies = [], ?array $server = null, string $header = 'X-Forwarded-For'): ?string`
+
+  Determine the real client IP from server parameters (defaults to `$_SERVER`). Returns `REMOTE_ADDR` unless the request
+  comes from a trusted proxy (exact IP or CIDR range), in which case the forwarded header chain is walked from right to
+  left and the first non-trusted hop is returned. If `REMOTE_ADDR` is not trusted, the forwarded header is ignored.
+
 ## Object
 
 - `b_get_property_value($object, string $property, &$exists = null): mixed`

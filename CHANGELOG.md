@@ -6,6 +6,11 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- New `NetworkHelper` class with IPv4/IPv6 validation, netmask validation (dotted or CIDR prefix), CIDR validation, IP-in-network membership, network range computation, `X-Forwarded-For` parsing and trusted-proxy-aware client IP resolution
+- New bootstrap functions: `b_net_validate_ip()`, `b_net_validate_ipv4()`, `b_net_validate_ipv6()`, `b_net_ip_version()`, `b_net_validate_netmask()`, `b_net_validate_cidr()`, `b_net_ip_in_network()`, `b_net_range()`, `b_net_forwarded_for_parse()` and `b_net_client_ip()`
+
 ## [1.13.0] - 2026-04-30
 
 ### Added

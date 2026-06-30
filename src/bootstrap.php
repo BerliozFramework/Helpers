@@ -3,6 +3,7 @@
 use Berlioz\Helpers\ArrayHelper;
 use Berlioz\Helpers\FileHelper;
 use Berlioz\Helpers\ImageHelper;
+use Berlioz\Helpers\NetworkHelper;
 use Berlioz\Helpers\ObjectHelper;
 use Berlioz\Helpers\StringHelper;
 
@@ -250,6 +251,140 @@ function b_fwritei($resource, string $data, ?int $length = null, ?int $offset = 
 function b_ftruncate($resource, int $size, ?int $offset = null): bool
 {
     return FileHelper::ftruncate($resource, $size, $offset);
+}
+
+
+//////////////////////
+/// NETWORK HELPER ///
+//////////////////////
+
+/**
+ * Is valid IP (v4 or v6)?
+ *
+ * @param string $ip
+ *
+ * @return bool
+ */
+function b_net_validate_ip(string $ip): bool
+{
+    return NetworkHelper::isValidIp($ip);
+}
+
+/**
+ * Is valid IP v4?
+ *
+ * @param string $ip
+ *
+ * @return bool
+ */
+function b_net_validate_ipv4(string $ip): bool
+{
+    return NetworkHelper::isValidIpv4($ip);
+}
+
+/**
+ * Is valid IP v6?
+ *
+ * @param string $ip
+ *
+ * @return bool
+ */
+function b_net_validate_ipv6(string $ip): bool
+{
+    return NetworkHelper::isValidIpv6($ip);
+}
+
+/**
+ * Get IP version.
+ *
+ * @param string $ip
+ *
+ * @return int|null 4, 6 or null if not a valid IP
+ */
+function b_net_ip_version(string $ip): ?int
+{
+    return NetworkHelper::getIpVersion($ip);
+}
+
+/**
+ * Is valid netmask?
+ *
+ * Accepts a dotted netmask or a CIDR prefix length.
+ *
+ * @param string $mask
+ * @param int|null $version IP version constraint (4 or 6), or null to accept both
+ *
+ * @return bool
+ */
+function b_net_validate_netmask(string $mask, ?int $version = null): bool
+{
+    return NetworkHelper::isValidNetmask($mask, $version);
+}
+
+/**
+ * Is valid CIDR notation?
+ *
+ * @param string $cidr
+ *
+ * @return bool
+ */
+function b_net_validate_cidr(string $cidr): bool
+{
+    return NetworkHelper::isValidCidr($cidr);
+}
+
+/**
+ * Is IP in network?
+ *
+ * @param string $ip
+ * @param string $network CIDR notation or "ip mask"
+ *
+ * @return bool
+ */
+function b_net_ip_in_network(string $ip, string $network): bool
+{
+    return NetworkHelper::ipInNetwork($ip, $network);
+}
+
+/**
+ * Get network range.
+ *
+ * @param string $network CIDR notation or "ip mask"
+ *
+ * @return array
+ */
+function b_net_range(string $network): array
+{
+    return NetworkHelper::getNetworkRange($network);
+}
+
+/**
+ * Parse an `X-Forwarded-For` header value into a list of IP addresses.
+ *
+ * @param string $header Raw header value
+ *
+ * @return string[] List of valid IP addresses, in header order
+ */
+function b_net_forwarded_for_parse(string $header): array
+{
+    return NetworkHelper::forwardedForParse($header);
+}
+
+/**
+ * Determine the real client IP address from server parameters.
+ *
+ * @param string[] $trustedProxies List of trusted proxy IPs or CIDR ranges
+ * @param array|null $server Server parameters (defaults to `$_SERVER` when null)
+ * @param string $header Forwarded header name (default: `X-Forwarded-For`)
+ *
+ * @return string|null The client IP, or null if `REMOTE_ADDR` is missing/invalid
+ */
+function b_net_client_ip(
+    array $trustedProxies = [],
+    ?array $server = null,
+    string $header = 'X-Forwarded-For'
+): ?string {
+    return NetworkHelper::clientIp($trustedProxies, $server, $header);
 }
 
 
