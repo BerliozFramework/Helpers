@@ -6,6 +6,8 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-06-30
+
 ### Added
 
 - New `NetworkHelper` class with IPv4/IPv6 validation, netmask validation (dotted or CIDR prefix), CIDR validation, IP-in-network membership, network range computation, `X-Forwarded-For` parsing and trusted-proxy-aware client IP resolution
