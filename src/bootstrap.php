@@ -387,6 +387,19 @@ function b_net_client_ip(
     return NetworkHelper::clientIp($trustedProxies, $server, $header);
 }
 
+/**
+ * Is the given IP a trusted proxy?
+ *
+ * @param string $ip
+ * @param string[] $trustedProxies List of trusted proxy IPs or CIDR ranges
+ *
+ * @return bool
+ */
+function b_net_is_trusted_proxy(string $ip, array $trustedProxies): bool
+{
+    return NetworkHelper::isTrustedProxy($ip, $trustedProxies);
+}
+
 
 /////////////////////
 /// OBJECT HELPER ///

@@ -367,4 +367,44 @@ class NetworkHelperTest extends TestCase
             $_SERVER = $previous;
         }
     }
+
+    public function testIsTrustedProxyEmptyList()
+    {
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.5', []));
+    }
+
+    public function testIsTrustedProxyExactIp()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['10.0.0.5']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.6', ['10.0.0.5']));
+        // IPv6 exact match (different textual forms of the same address)
+        $this->assertTrue(NetworkHelper::isTrustedProxy('2001:db8::1', ['2001:0db8:0000::1']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('2001:db8::2', ['2001:db8::1']));
+    }
+
+    public function testIsTrustedProxyCidr()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.1.2.3', ['10.0.0.0/8']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('11.1.2.3', ['10.0.0.0/8']));
+        // IPv6 CIDR
+        $this->assertTrue(NetworkHelper::isTrustedProxy('2001:db8::99', ['2001:db8::/32']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('2001:db9::99', ['2001:db8::/32']));
+    }
+
+    public function testIsTrustedProxyMixedList()
+    {
+        $proxies = ['192.168.1.1', '10.0.0.0/8', '2001:db8::/32'];
+
+        $this->assertTrue(NetworkHelper::isTrustedProxy('192.168.1.1', $proxies));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.255.255.254', $proxies));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('2001:db8::abcd', $proxies));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('203.0.113.7', $proxies));
+    }
+
+    public function testIsTrustedProxyIgnoresInvalidEntries()
+    {
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.5', ['foo', '10.0.0.0/33', '999.1.1.1']));
+        // Valid entry after invalid ones is still honoured
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['foo', '10.0.0.0/8']));
+    }
 }

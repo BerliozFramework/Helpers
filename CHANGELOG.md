@@ -6,6 +6,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- `NetworkHelper::isTrustedProxy()` is now public, with a new `b_net_is_trusted_proxy()` bootstrap function, to check whether an IP is a trusted proxy (exact IP or CIDR range)
+
 ## [1.14.0] - 2026-06-30
 
 ### Added

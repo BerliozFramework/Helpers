@@ -132,6 +132,11 @@ All array path methods support the following path formats:
   comes from a trusted proxy (exact IP or CIDR range), in which case the forwarded header chain is walked from right to
   left and the first non-trusted hop is returned. If `REMOTE_ADDR` is not trusted, the forwarded header is ignored.
 
+- `b_net_is_trusted_proxy(string $ip, array $trustedProxies): bool`
+
+  Is the given IP a trusted proxy? Matches an exact IP address or a CIDR range (e.g. `10.0.0.0/8`). Invalid entries are
+  ignored.
+
 ## Object
 
 - `b_get_property_value($object, string $property, &$exists = null): mixed`

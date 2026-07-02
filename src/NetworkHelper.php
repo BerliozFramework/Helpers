@@ -373,12 +373,16 @@ final class NetworkHelper
     /**
      * Is the given IP a trusted proxy?
      *
+     * A proxy is trusted when it matches one of the given entries, either as an
+     * exact IP address or by belonging to a CIDR range (e.g. `10.0.0.0/8`).
+     * Invalid entries are ignored.
+     *
      * @param string $ip
-     * @param string[] $trustedProxies List of IPs or CIDR ranges
+     * @param string[] $trustedProxies List of trusted proxy IPs or CIDR ranges
      *
      * @return bool
      */
-    private static function isTrustedProxy(string $ip, array $trustedProxies): bool
+    public static function isTrustedProxy(string $ip, array $trustedProxies): bool
     {
         foreach ($trustedProxies as $trusted) {
             if (false !== strpos($trusted, '/')) {
