@@ -122,8 +122,8 @@ final class FileHelper
      */
     public static function resolveAbsolutePath(string $srcPath, string $dstPath): ?string
     {
-        $srcPath = self::uniformizePathSeparator($srcPath);
-        $dstPath = self::uniformizePathSeparator($dstPath);
+        $srcPath = self::normalizePath($srcPath);
+        $dstPath = self::normalizePath($dstPath);
         $finalPath = $dstPath ?: $srcPath;
 
         if (strlen($dstPath) > 0 && substr($dstPath, 0, 1) !== '/') {
@@ -135,7 +135,7 @@ final class FileHelper
             // Unification of directories separators
             $finalPath = $srcPath;
             if (substr($finalPath, -1) !== '/') {
-                $finalPath = self::uniformizePathSeparator(dirname($finalPath));
+                $finalPath = self::normalizePath(dirname($finalPath));
             }
             $finalPath = rtrim($finalPath, '/');
             if ($finalPath === '.') {
@@ -237,18 +237,6 @@ final class FileHelper
         $path = str_replace(['\\', '/'], '/', $path);
 
         return preg_replace('#/{2,}#', '/', $path);
-    }
-
-    /**
-     * Uniformize path separator.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    private static function uniformizePathSeparator(string $path): string
-    {
-        return self::normalizePath($path);
     }
 
     /**
