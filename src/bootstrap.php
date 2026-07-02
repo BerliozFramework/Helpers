@@ -142,6 +142,32 @@ function b_array_traverse_unset(iterable &$mixed, string $path): bool
 }
 
 /**
+ * Get a subset of the array containing only the given keys.
+ *
+ * @param array $array
+ * @param array $keys Keys to keep
+ *
+ * @return array
+ */
+function b_array_only(array $array, array $keys): array
+{
+    return ArrayHelper::only($array, $keys);
+}
+
+/**
+ * Get a subset of the array excluding the given keys.
+ *
+ * @param array $array
+ * @param array $keys Keys to remove
+ *
+ * @return array
+ */
+function b_array_except(array $array, array $keys): array
+{
+    return ArrayHelper::except($array, $keys);
+}
+
+/**
  * Simplify multi-dimensional array.
  *
  * @param array $array

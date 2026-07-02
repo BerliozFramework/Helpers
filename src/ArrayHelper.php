@@ -429,6 +429,32 @@ final class ArrayHelper
     }
 
     /**
+     * Get a subset of the array containing only the given keys.
+     *
+     * @param array $array
+     * @param array $keys Keys to keep
+     *
+     * @return array
+     */
+    public static function only(array $array, array $keys): array
+    {
+        return array_intersect_key($array, array_flip($keys));
+    }
+
+    /**
+     * Get a subset of the array excluding the given keys.
+     *
+     * @param array $array
+     * @param array $keys Keys to remove
+     *
+     * @return array
+     */
+    public static function except(array $array, array $keys): array
+    {
+        return array_diff_key($array, array_flip($keys));
+    }
+
+    /**
      * Transform multidimensional array to simple level.
      *
      * @param array $array

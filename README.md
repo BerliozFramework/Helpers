@@ -49,6 +49,14 @@ All array path methods support the following path formats:
 
   Traverse array with path and unset value.
 
+- `b_array_only(array $array, array $keys): array`
+
+  Get a subset of the array containing only the given keys. Missing keys are ignored and the source order is preserved.
+
+- `b_array_except(array $array, array $keys): array`
+
+  Get a subset of the array excluding the given keys. Missing keys are ignored and the source order is preserved.
+
 - `b_array_simple(array $array, ?string $prefix = null): array`
 
   Simplify a multidimensional array to simple.

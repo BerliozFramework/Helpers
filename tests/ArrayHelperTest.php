@@ -742,4 +742,68 @@ class ArrayHelperTest extends TestCase
             ArrayHelper::nestedArray($arr),
         );
     }
+
+    public function testOnly()
+    {
+        $array = ['foo' => 'bar', 'baz' => 'qux', 'hello' => 'world'];
+
+        $this->assertEquals(
+            ['foo' => 'bar', 'hello' => 'world'],
+            ArrayHelper::only($array, ['foo', 'hello'])
+        );
+
+        // Preserve source order, not keys order
+        $this->assertSame(
+            ['foo' => 'bar', 'hello' => 'world'],
+            ArrayHelper::only($array, ['hello', 'foo'])
+        );
+
+        // Missing keys are ignored
+        $this->assertEquals(
+            ['foo' => 'bar'],
+            ArrayHelper::only($array, ['foo', 'missing'])
+        );
+
+        // Empty cases
+        $this->assertEquals([], ArrayHelper::only($array, []));
+        $this->assertEquals([], ArrayHelper::only([], ['foo']));
+
+        // Numeric keys
+        $this->assertEquals(
+            [0 => 'foo', 2 => 'baz'],
+            ArrayHelper::only(['foo', 'bar', 'baz'], [0, 2])
+        );
+    }
+
+    public function testExcept()
+    {
+        $array = ['foo' => 'bar', 'baz' => 'qux', 'hello' => 'world'];
+
+        $this->assertEquals(
+            ['baz' => 'qux'],
+            ArrayHelper::except($array, ['foo', 'hello'])
+        );
+
+        // Missing keys are ignored
+        $this->assertEquals(
+            ['baz' => 'qux', 'hello' => 'world'],
+            ArrayHelper::except($array, ['foo', 'missing'])
+        );
+
+        // Preserve source order
+        $this->assertSame(
+            ['foo' => 'bar', 'hello' => 'world'],
+            ArrayHelper::except($array, ['baz'])
+        );
+
+        // Empty cases
+        $this->assertEquals($array, ArrayHelper::except($array, []));
+        $this->assertEquals([], ArrayHelper::except([], ['foo']));
+
+        // Numeric keys
+        $this->assertEquals(
+            [1 => 'bar'],
+            ArrayHelper::except(['foo', 'bar', 'baz'], [0, 2])
+        );
+    }
 }
