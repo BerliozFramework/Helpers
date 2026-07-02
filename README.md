@@ -101,6 +101,30 @@ All array path methods support the following path formats:
 
   Get IP version (4, 6 or null if not a valid IP).
 
+- `b_net_is_private_ip(string $ip): bool`
+
+  Is a private (non-public) IP address? Returns `true` for private and reserved ranges (e.g. `10.0.0.0/8`,
+  `192.168.0.0/16`, `fc00::/7`, loopback, link-local, ...).
+
+- `b_net_is_public_ip(string $ip): bool`
+
+  Is a publicly routable IP address?
+
+- `b_net_ip_in_range(string $ip, string $start, string $end): bool`
+
+  Is IP within the inclusive range `[start, end]`? Works for IPv4 and IPv6 (same family required); bounds may be given in
+  any order.
+
+- `b_net_expand_ipv6(string $ip): ?string`
+
+  Expand an IPv6 address to its full form (e.g. `2001:db8::1` -> `2001:0db8:0000:0000:0000:0000:0000:0001`), or `null` if
+  not a valid IPv6.
+
+- `b_net_compress_ipv6(string $ip): ?string`
+
+  Compress an IPv6 address to its shortest canonical form (e.g. `2001:0db8:0000:0000:0000:0000:0000:0001` ->
+  `2001:db8::1`), or `null` if not a valid IPv6.
+
 - `b_net_validate_netmask(string $mask, ?int $version = null): bool`
 
   Is valid netmask? Accepts a dotted netmask (e.g. `255.255.255.0`) or a CIDR prefix length (e.g. `24`). A valid netmask

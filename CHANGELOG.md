@@ -9,6 +9,10 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Added
 
 - `NetworkHelper::isTrustedProxy()` is now public, with a new `b_net_is_trusted_proxy()` bootstrap function, to check whether an IP is a trusted proxy (exact IP or CIDR range)
+- New `NetworkHelper::isPrivateIp()` and `NetworkHelper::isPublicIp()` to check whether an IP is private/reserved or publicly routable
+- New `NetworkHelper::ipInRange()` to check IP membership in an inclusive range (IPv4/IPv6)
+- New `NetworkHelper::expandIpv6()` and `NetworkHelper::compressIpv6()` to expand/compress IPv6 addresses
+- New bootstrap functions: `b_net_is_private_ip()`, `b_net_is_public_ip()`, `b_net_ip_in_range()`, `b_net_expand_ipv6()` and `b_net_compress_ipv6()`
 
 ## [1.14.0] - 2026-06-30
 

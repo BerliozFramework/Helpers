@@ -407,4 +407,120 @@ class NetworkHelperTest extends TestCase
         // Valid entry after invalid ones is still honoured
         $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['foo', '10.0.0.0/8']));
     }
+
+    public function testIsPrivateIp()
+    {
+        // IPv4 private ranges
+        $this->assertTrue(NetworkHelper::isPrivateIp('10.0.0.1'));
+        $this->assertTrue(NetworkHelper::isPrivateIp('172.16.5.4'));
+        $this->assertTrue(NetworkHelper::isPrivateIp('192.168.1.1'));
+        // IPv4 reserved ranges
+        $this->assertTrue(NetworkHelper::isPrivateIp('127.0.0.1'));
+        $this->assertTrue(NetworkHelper::isPrivateIp('169.254.1.1'));
+        // Public
+        $this->assertFalse(NetworkHelper::isPrivateIp('8.8.8.8'));
+        $this->assertFalse(NetworkHelper::isPrivateIp('203.0.113.7'));
+        // IPv6
+        $this->assertTrue(NetworkHelper::isPrivateIp('fc00::1'));
+        $this->assertTrue(NetworkHelper::isPrivateIp('::1'));
+        $this->assertFalse(NetworkHelper::isPrivateIp('2001:4860:4860::8888'));
+        // Invalid
+        $this->assertFalse(NetworkHelper::isPrivateIp('not an ip'));
+    }
+
+    public function testIsPublicIp()
+    {
+        $this->assertTrue(NetworkHelper::isPublicIp('8.8.8.8'));
+        $this->assertTrue(NetworkHelper::isPublicIp('203.0.113.7'));
+        $this->assertTrue(NetworkHelper::isPublicIp('2001:4860:4860::8888'));
+        $this->assertFalse(NetworkHelper::isPublicIp('10.0.0.1'));
+        $this->assertFalse(NetworkHelper::isPublicIp('127.0.0.1'));
+        $this->assertFalse(NetworkHelper::isPublicIp('fc00::1'));
+        $this->assertFalse(NetworkHelper::isPublicIp('not an ip'));
+    }
+
+    public function testIsPrivateAndPublicAreComplementary()
+    {
+        foreach (['10.0.0.1', '8.8.8.8', '::1', '2001:4860:4860::8888', 'fc00::1'] as $ip) {
+            $this->assertNotSame(
+                NetworkHelper::isPrivateIp($ip),
+                NetworkHelper::isPublicIp($ip),
+                sprintf('Private/public must be complementary for %s', $ip)
+            );
+        }
+    }
+
+    public function testIpInRangeIpv4()
+    {
+        $this->assertTrue(NetworkHelper::ipInRange('192.168.1.50', '192.168.1.1', '192.168.1.100'));
+        // Inclusive bounds
+        $this->assertTrue(NetworkHelper::ipInRange('192.168.1.1', '192.168.1.1', '192.168.1.100'));
+        $this->assertTrue(NetworkHelper::ipInRange('192.168.1.100', '192.168.1.1', '192.168.1.100'));
+        // Outside
+        $this->assertFalse(NetworkHelper::ipInRange('192.168.1.200', '192.168.1.1', '192.168.1.100'));
+        $this->assertFalse(NetworkHelper::ipInRange('192.168.0.255', '192.168.1.1', '192.168.1.100'));
+    }
+
+    public function testIpInRangeReversedBounds()
+    {
+        // Bounds given in any order
+        $this->assertTrue(NetworkHelper::ipInRange('192.168.1.50', '192.168.1.100', '192.168.1.1'));
+    }
+
+    public function testIpInRangeIpv6()
+    {
+        $this->assertTrue(NetworkHelper::ipInRange('2001:db8::5', '2001:db8::1', '2001:db8::10'));
+        $this->assertFalse(NetworkHelper::ipInRange('2001:db8::ffff', '2001:db8::1', '2001:db8::10'));
+    }
+
+    public function testIpInRangeMixedFamiliesOrInvalid()
+    {
+        $this->assertFalse(NetworkHelper::ipInRange('10.0.0.1', '192.168.1.1', '2001:db8::1'));
+        $this->assertFalse(NetworkHelper::ipInRange('2001:db8::1', '10.0.0.1', '10.0.0.255'));
+        $this->assertFalse(NetworkHelper::ipInRange('foo', '10.0.0.1', '10.0.0.255'));
+    }
+
+    public function testExpandIpv6()
+    {
+        $this->assertSame(
+            '2001:0db8:0000:0000:0000:0000:0000:0001',
+            NetworkHelper::expandIpv6('2001:db8::1')
+        );
+        $this->assertSame(
+            '0000:0000:0000:0000:0000:0000:0000:0001',
+            NetworkHelper::expandIpv6('::1')
+        );
+        $this->assertSame(
+            '0000:0000:0000:0000:0000:0000:0000:0000',
+            NetworkHelper::expandIpv6('::')
+        );
+        // Invalid / not IPv6
+        $this->assertNull(NetworkHelper::expandIpv6('192.168.1.1'));
+        $this->assertNull(NetworkHelper::expandIpv6('foo'));
+    }
+
+    public function testCompressIpv6()
+    {
+        $this->assertSame(
+            '2001:db8::1',
+            NetworkHelper::compressIpv6('2001:0db8:0000:0000:0000:0000:0000:0001')
+        );
+        $this->assertSame('::1', NetworkHelper::compressIpv6('0000:0000:0000:0000:0000:0000:0000:0001'));
+        $this->assertSame('::', NetworkHelper::compressIpv6('0000:0000:0000:0000:0000:0000:0000:0000'));
+        // Invalid / not IPv6
+        $this->assertNull(NetworkHelper::compressIpv6('192.168.1.1'));
+        $this->assertNull(NetworkHelper::compressIpv6('foo'));
+    }
+
+    public function testExpandCompressRoundTrip()
+    {
+        foreach (['2001:db8::1', '::1', 'fe80::1ff:fe23:4567:890a', '::'] as $ip) {
+            $expanded = NetworkHelper::expandIpv6($ip);
+            $this->assertNotNull($expanded);
+            $this->assertSame(
+                NetworkHelper::compressIpv6($ip),
+                NetworkHelper::compressIpv6($expanded)
+            );
+        }
+    }
 }

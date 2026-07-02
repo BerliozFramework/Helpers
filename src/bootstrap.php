@@ -307,6 +307,68 @@ function b_net_ip_version(string $ip): ?int
 }
 
 /**
+ * Is a private (non-public) IP address?
+ *
+ * @param string $ip
+ *
+ * @return bool
+ */
+function b_net_is_private_ip(string $ip): bool
+{
+    return NetworkHelper::isPrivateIp($ip);
+}
+
+/**
+ * Is a public (publicly routable) IP address?
+ *
+ * @param string $ip
+ *
+ * @return bool
+ */
+function b_net_is_public_ip(string $ip): bool
+{
+    return NetworkHelper::isPublicIp($ip);
+}
+
+/**
+ * Is IP within the inclusive range [start, end]?
+ *
+ * @param string $ip
+ * @param string $start
+ * @param string $end
+ *
+ * @return bool
+ */
+function b_net_ip_in_range(string $ip, string $start, string $end): bool
+{
+    return NetworkHelper::ipInRange($ip, $start, $end);
+}
+
+/**
+ * Expand an IPv6 address to its full, uncompressed form.
+ *
+ * @param string $ip
+ *
+ * @return string|null The expanded address, or null if not a valid IPv6
+ */
+function b_net_expand_ipv6(string $ip): ?string
+{
+    return NetworkHelper::expandIpv6($ip);
+}
+
+/**
+ * Compress an IPv6 address to its shortest canonical form.
+ *
+ * @param string $ip
+ *
+ * @return string|null The compressed address, or null if not a valid IPv6
+ */
+function b_net_compress_ipv6(string $ip): ?string
+{
+    return NetworkHelper::compressIpv6($ip);
+}
+
+/**
  * Is valid netmask?
  *
  * Accepts a dotted netmask or a CIDR prefix length.

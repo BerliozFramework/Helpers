@@ -80,6 +80,141 @@ final class NetworkHelper
     }
 
     /**
+     * Is a private (non-public) IP address?
+     *
+     * A private IP belongs to a private range (e.g. `10.0.0.0/8`,
+     * `192.168.0.0/16`, `fc00::/7`, ...) or a reserved range (e.g. loopback,
+     * link-local, `0.0.0.0/8`, ...). In other words: anything that is not a
+     * publicly routable address.
+     *
+     * @param string $ip
+     *
+     * @return bool
+     */
+    public static function isPrivateIp(string $ip): bool
+    {
+        if (false === self::isValidIp($ip)) {
+            return false;
+        }
+
+        return false === filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        );
+    }
+
+    /**
+     * Is a public (publicly routable) IP address?
+     *
+     * @param string $ip
+     *
+     * @return bool
+     */
+    public static function isPublicIp(string $ip): bool
+    {
+        if (false === self::isValidIp($ip)) {
+            return false;
+        }
+
+        return false !== filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        );
+    }
+
+    /**
+     * Is IP within the inclusive range [start, end]?
+     *
+     * All three addresses must be valid and of the same IP family (IPv4 or
+     * IPv6). The comparison is done on the binary representation, so it works
+     * for both families. The bounds are inclusive and may be given in any
+     * order.
+     *
+     * @param string $ip
+     * @param string $start
+     * @param string $end
+     *
+     * @return bool
+     */
+    public static function ipInRange(string $ip, string $start, string $end): bool
+    {
+        $version = self::getIpVersion($ip);
+
+        if (null === $version
+            || $version !== self::getIpVersion($start)
+            || $version !== self::getIpVersion($end)) {
+            return false;
+        }
+
+        $ipBinary = inet_pton($ip);
+        $startBinary = inet_pton($start);
+        $endBinary = inet_pton($end);
+
+        if (false === $ipBinary || false === $startBinary || false === $endBinary) {
+            return false;
+        }
+
+        // Allow bounds given in any order
+        if (strcmp($startBinary, $endBinary) > 0) {
+            [$startBinary, $endBinary] = [$endBinary, $startBinary];
+        }
+
+        return strcmp($ipBinary, $startBinary) >= 0 && strcmp($ipBinary, $endBinary) <= 0;
+    }
+
+    /**
+     * Expand an IPv6 address to its full, uncompressed form.
+     *
+     * E.g. `2001:db8::1` becomes `2001:0db8:0000:0000:0000:0000:0000:0001`.
+     *
+     * @param string $ip
+     *
+     * @return string|null The expanded address, or null if not a valid IPv6
+     */
+    public static function expandIpv6(string $ip): ?string
+    {
+        if (false === self::isValidIpv6($ip)) {
+            return null;
+        }
+
+        $binary = inet_pton($ip);
+
+        if (false === $binary) {
+            return null;
+        }
+
+        $hex = bin2hex($binary);
+
+        return implode(':', str_split($hex, 4));
+    }
+
+    /**
+     * Compress an IPv6 address to its shortest canonical form.
+     *
+     * E.g. `2001:0db8:0000:0000:0000:0000:0000:0001` becomes `2001:db8::1`.
+     *
+     * @param string $ip
+     *
+     * @return string|null The compressed address, or null if not a valid IPv6
+     */
+    public static function compressIpv6(string $ip): ?string
+    {
+        if (false === self::isValidIpv6($ip)) {
+            return null;
+        }
+
+        $binary = inet_pton($ip);
+
+        if (false === $binary) {
+            return null;
+        }
+
+        return inet_ntop($binary);
+    }
+
+    /**
      * Is valid netmask?
      *
      * Accepts a dotted netmask (e.g. "255.255.255.0" or IPv6 mask) or a CIDR
