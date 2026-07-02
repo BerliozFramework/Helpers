@@ -503,6 +503,34 @@ function b_net_is_trusted_proxy(string $ip, array $trustedProxies): bool
     return NetworkHelper::isTrustedProxy($ip, $trustedProxies);
 }
 
+/**
+ * Convert an IP address to its numeric representation.
+ *
+ * IPv4 addresses are returned as an unsigned integer. IPv6 addresses are
+ * returned as a decimal numeric string (requires the `gmp` extension).
+ *
+ * @param string $ip
+ *
+ * @return int|string|null Numeric representation, or null if not a valid IP
+ */
+function b_net_ip_to_long(string $ip)
+{
+    return NetworkHelper::ipToLong($ip);
+}
+
+/**
+ * Convert a numeric representation to an IP address.
+ *
+ * @param int|string $value Numeric representation (integer or decimal string)
+ * @param int|null $version IP version (4 or 6), or null to detect automatically
+ *
+ * @return string|null The IP address, or null if the value is out of range or invalid
+ */
+function b_net_long_to_ip($value, ?int $version = null): ?string
+{
+    return NetworkHelper::longToIp($value, $version);
+}
+
 
 /////////////////////
 /// OBJECT HELPER ///

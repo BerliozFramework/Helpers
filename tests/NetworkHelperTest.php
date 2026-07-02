@@ -523,4 +523,68 @@ class NetworkHelperTest extends TestCase
             );
         }
     }
+
+    public function testIpToLongIpv4()
+    {
+        $this->assertSame(0, NetworkHelper::ipToLong('0.0.0.0'));
+        $this->assertSame(4294967295, NetworkHelper::ipToLong('255.255.255.255'));
+        $this->assertSame(3232235521, NetworkHelper::ipToLong('192.168.0.1'));
+    }
+
+    public function testIpToLongInvalid()
+    {
+        $this->assertNull(NetworkHelper::ipToLong('not an ip'));
+        $this->assertNull(NetworkHelper::ipToLong('999.999.999.999'));
+        $this->assertNull(NetworkHelper::ipToLong(''));
+    }
+
+    public function testLongToIpIpv4()
+    {
+        $this->assertSame('0.0.0.0', NetworkHelper::longToIp(0));
+        $this->assertSame('255.255.255.255', NetworkHelper::longToIp(4294967295));
+        $this->assertSame('192.168.0.1', NetworkHelper::longToIp(3232235521));
+
+        // Explicit version and string input
+        $this->assertSame('192.168.0.1', NetworkHelper::longToIp('3232235521', 4));
+    }
+
+    public function testLongToIpInvalid()
+    {
+        $this->assertNull(NetworkHelper::longToIp('not numeric'));
+        $this->assertNull(NetworkHelper::longToIp('4294967296', 4));
+        $this->assertNull(NetworkHelper::longToIp(-1, 4));
+    }
+
+    public function testIpToLongRoundTripIpv4()
+    {
+        foreach (['0.0.0.0', '10.0.0.1', '172.16.5.4', '192.168.1.254', '255.255.255.255'] as $ip) {
+            $this->assertSame($ip, NetworkHelper::longToIp(NetworkHelper::ipToLong($ip)));
+        }
+    }
+
+    public function testIpToLongIpv6()
+    {
+        if (!extension_loaded('gmp')) {
+            $this->markTestSkipped('The "gmp" extension is not loaded');
+        }
+
+        $this->assertSame('0', NetworkHelper::ipToLong('::'));
+        $this->assertSame('1', NetworkHelper::ipToLong('::1'));
+        $this->assertSame(
+            '42540766411282592856903984951653826561',
+            NetworkHelper::ipToLong('2001:db8::1')
+        );
+    }
+
+    public function testIpToLongRoundTripIpv6()
+    {
+        if (!extension_loaded('gmp')) {
+            $this->markTestSkipped('The "gmp" extension is not loaded');
+        }
+
+        foreach (['::', '::1', '2001:db8::1', 'fe80::1ff:fe23:4567:890a'] as $ip) {
+            $long = NetworkHelper::ipToLong($ip);
+            $this->assertSame($ip, NetworkHelper::longToIp($long, 6));
+        }
+    }
 }

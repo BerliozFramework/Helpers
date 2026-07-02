@@ -10,6 +10,11 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 
 - New `ArrayHelper::only()` and `ArrayHelper::except()` to get a subset of an array by keeping or removing the given keys, with new `b_array_only()` and `b_array_except()` bootstrap functions
 - New `FileHelper::normalizePath()` to uniformize directory separators and collapse consecutive slashes, with a new `b_file_normalize_path()` bootstrap function
+- New `NetworkHelper::ipToLong()` and `NetworkHelper::longToIp()` to convert IP addresses to/from their numeric representation (IPv4 as unsigned integer, IPv6 as decimal string via the `gmp` extension), with new `b_net_ip_to_long()` and `b_net_long_to_ip()` bootstrap functions
+
+### Changed
+
+- Added `ext-gmp` to the `suggest` section of `composer.json` (required for IPv6 numeric conversions)
 - `NetworkHelper::isTrustedProxy()` is now public, with a new `b_net_is_trusted_proxy()` bootstrap function, to check whether an IP is a trusted proxy (exact IP or CIDR range)
 - New `NetworkHelper::isPrivateIp()` and `NetworkHelper::isPublicIp()` to check whether an IP is private/reserved or publicly routable
 - New `NetworkHelper::ipInRange()` to check IP membership in an inclusive range (IPv4/IPv6)

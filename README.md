@@ -174,6 +174,16 @@ All array path methods support the following path formats:
   Is the given IP a trusted proxy? Matches an exact IP address or a CIDR range (e.g. `10.0.0.0/8`). Invalid entries are
   ignored.
 
+- `b_net_ip_to_long(string $ip): int|string|null`
+
+  Convert an IP address to its numeric representation. IPv4 addresses are returned as an unsigned integer, IPv6
+  addresses as a decimal numeric string (requires the `gmp` extension). Returns `null` if not a valid IP.
+
+- `b_net_long_to_ip(int|string $value, ?int $version = null): ?string`
+
+  Convert a numeric representation back to an IP address. The version (`4` or `6`) can be forced or detected
+  automatically. IPv6 requires the `gmp` extension. Returns `null` if the value is out of range or invalid.
+
 ## Object
 
 - `b_get_property_value($object, string $property, &$exists = null): mixed`

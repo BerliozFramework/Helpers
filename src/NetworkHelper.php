@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Berlioz\Helpers;
 
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Class NetworkHelper.
@@ -695,5 +696,97 @@ final class NetworkHelper
 
         // Valid mask matches: ones followed by zeros (e.g. 1110...0)
         return preg_match('/^1*0*$/', $bits) === 1;
+    }
+
+    /**
+     * Convert an IP address to its numeric representation.
+     *
+     * IPv4 addresses are returned as an unsigned integer. IPv6 addresses are
+     * returned as a decimal numeric string (requires the `gmp` extension).
+     *
+     * @param string $ip
+     *
+     * @return int|string|null Numeric representation, or null if not a valid IP
+     * @throws RuntimeException if the `gmp` extension is required but not loaded
+     */
+    public static function ipToLong(string $ip)
+    {
+        $version = self::getIpVersion($ip);
+
+        if (null === $version) {
+            return null;
+        }
+
+        if (4 === $version) {
+            return (int)sprintf('%u', ip2long($ip));
+        }
+
+        if (!extension_loaded('gmp')) {
+            throw new RuntimeException('The "gmp" extension is required to convert IPv6 addresses');
+        }
+
+        $binary = inet_pton($ip);
+
+        return gmp_strval(gmp_import($binary));
+    }
+
+    /**
+     * Convert a numeric representation to an IP address.
+     *
+     * @param int|string $value Numeric representation (integer or decimal string)
+     * @param int|null $version IP version (4 or 6), or null to detect automatically
+     *
+     * @return string|null The IP address, or null if the value is out of range or invalid
+     * @throws RuntimeException if the `gmp` extension is required but not loaded
+     */
+    public static function longToIp($value, ?int $version = null)
+    {
+        if (is_int($value)) {
+            if ($value < 0) {
+                return null;
+            }
+        } elseif (!(is_string($value) && ctype_digit($value))) {
+            return null;
+        }
+
+        // Auto-detect version: an IPv4 fits in 0..4294967295
+        if (null === $version) {
+            $version = (is_int($value) && $value >= 0 && $value <= 4294967295) ? 4 : 6;
+        }
+
+        if (4 === $version) {
+            // Compare as strings to safely handle values beyond PHP_INT_MAX on 32-bit
+            $normalized = ltrim(is_string($value) ? $value : (string)$value, '0');
+            $normalized = '' === $normalized ? '0' : $normalized;
+
+            if (strlen($normalized) > 10 ||
+                (strlen($normalized) === 10 && strcmp($normalized, '4294967295') > 0)) {
+                return null;
+            }
+
+            return long2ip((int)$normalized);
+        }
+
+        if (6 === $version) {
+            if (!extension_loaded('gmp')) {
+                throw new RuntimeException('The "gmp" extension is required to convert IPv6 addresses');
+            }
+
+            $number = gmp_init((string)$value);
+
+            if (gmp_cmp($number, '0') < 0 ||
+                gmp_cmp($number, gmp_sub(gmp_pow(2, 128), 1)) > 0) {
+                return null;
+            }
+
+            $binary = gmp_export($number);
+            $binary = str_pad($binary, 16, "\0", STR_PAD_LEFT);
+
+            $ip = inet_ntop($binary);
+
+            return false !== $ip ? $ip : null;
+        }
+
+        return null;
     }
 }

@@ -33,7 +33,8 @@
   },
   "suggest": {
     "ext-gd": "Allows to use image helpers functions",
-    "ext-simplexml": "Allows to use XML functions"
+    "ext-simplexml": "Allows to use XML functions",
+    "ext-gmp": "Allows to convert IPv6 addresses to/from their numeric representation"
   },
   "conflict": {
     "berlioz/utils": "*"
