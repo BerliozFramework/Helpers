@@ -552,6 +552,23 @@ function b_get_property_value(object $object, string $property, ?bool &$exists =
 }
 
 /**
+ * Has property?
+ *
+ * Checks whether a readable property exists, using the same detection logic
+ * as b_get_property_value() (getter method, public property or magic methods).
+ *
+ * @param object $object
+ * @param string $property
+ *
+ * @return bool
+ * @throws ReflectionException
+ */
+function b_object_has_property(object $object, string $property): bool
+{
+    return ObjectHelper::hasProperty($object, $property);
+}
+
+/**
  * Set property value with setter method.
  *
  * @param object $object

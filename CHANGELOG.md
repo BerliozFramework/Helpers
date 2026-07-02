@@ -11,6 +11,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 - New `ArrayHelper::only()` and `ArrayHelper::except()` to get a subset of an array by keeping or removing the given keys, with new `b_array_only()` and `b_array_except()` bootstrap functions
 - New `FileHelper::normalizePath()` to uniformize directory separators and collapse consecutive slashes, with a new `b_file_normalize_path()` bootstrap function
 - New `NetworkHelper::ipToLong()` and `NetworkHelper::longToIp()` to convert IP addresses to/from their numeric representation (IPv4 as unsigned integer, IPv6 as decimal string via the `gmp` extension), with new `b_net_ip_to_long()` and `b_net_long_to_ip()` bootstrap functions
+- New `ObjectHelper::hasProperty()` to check whether a readable property exists (getter method, public property or magic methods), with a new `b_object_has_property()` bootstrap function
 
 ### Changed
 

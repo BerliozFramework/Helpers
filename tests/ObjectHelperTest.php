@@ -115,4 +115,40 @@ class ObjectHelperTest extends TestCase
         $this->assertTrue(ObjectHelper::setPropertyValue($obj, 'foo4', 'bob4'));
         $this->assertEquals('bob4', $propertyReflection->getValue($obj));
     }
+
+    public function testHasProperty()
+    {
+        $obj = $this->provider();
+
+        // Getter methods
+        $this->assertTrue(ObjectHelper::hasProperty($obj, 'foo'));
+        $this->assertTrue(ObjectHelper::hasProperty($obj, 'foo2'));
+
+        // Public property (and get_foo3 accessor)
+        $this->assertTrue(ObjectHelper::hasProperty($obj, 'foo3'));
+
+        // Private property without readable accessor
+        $this->assertFalse(ObjectHelper::hasProperty($obj, 'foo4'));
+
+        // Unknown property
+        $this->assertFalse(ObjectHelper::hasProperty($obj, 'unknown'));
+    }
+
+    public function testHasPropertyViaMagicCall()
+    {
+        $obj = new class() {
+            private $foo = 'bar';
+
+            public function __call($name, $args = [])
+            {
+                if ($name === 'getFoo') {
+                    return $this->foo;
+                }
+                throw new \BadMethodCallException(sprintf('Method "%s" does not exist', $name));
+            }
+        };
+
+        $this->assertTrue(ObjectHelper::hasProperty($obj, 'foo'));
+        $this->assertFalse(ObjectHelper::hasProperty($obj, 'unknown'));
+    }
 }

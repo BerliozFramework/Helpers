@@ -190,6 +190,11 @@ All array path methods support the following path formats:
 
   Get property value with getter method.
 
+- `b_object_has_property(object $object, string $property): bool`
+
+  Has readable property? Uses the same detection logic as `b_get_property_value()` (getter method, public property or
+  magic methods).
+
 - `b_set_property_value($object, string $property, $value): bool`
 
   Set property value with setter method.

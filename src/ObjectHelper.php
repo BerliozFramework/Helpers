@@ -92,6 +92,25 @@ final class ObjectHelper
     }
 
     /**
+     * Has property?
+     *
+     * Checks whether a readable property exists, using the same detection logic
+     * as getPropertyValue() (getter method, public property or magic methods).
+     *
+     * @param object $object
+     * @param string $property
+     *
+     * @return bool
+     * @throws ReflectionException
+     */
+    public static function hasProperty($object, string $property): bool
+    {
+        ObjectHelper::getPropertyValue($object, $property, $exists);
+
+        return $exists;
+    }
+
+    /**
      * Set property value with setter method.
      *
      * @param object $object
