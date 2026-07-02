@@ -83,6 +83,11 @@ All array path methods support the following path formats:
 
   Resolve relative path from another.
 
+- `b_file_normalize_path(string $path): string`
+
+  Normalize a path: uniformize directory separators (backslashes to slashes) and collapse consecutive slashes into a
+  single one.
+
 - `b_fwritei(resource $resource, string $str, ?int $length = null, ?int $offset = null): int|false`
 
   File write in insertion mode.

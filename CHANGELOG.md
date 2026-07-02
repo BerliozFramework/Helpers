@@ -9,6 +9,7 @@ use [Keep a Changelog] (http://keepachangelog.com/).
 ### Added
 
 - New `ArrayHelper::only()` and `ArrayHelper::except()` to get a subset of an array by keeping or removing the given keys, with new `b_array_only()` and `b_array_except()` bootstrap functions
+- New `FileHelper::normalizePath()` to uniformize directory separators and collapse consecutive slashes, with a new `b_file_normalize_path()` bootstrap function
 - `NetworkHelper::isTrustedProxy()` is now public, with a new `b_net_is_trusted_proxy()` bootstrap function, to check whether an IP is a trusted proxy (exact IP or CIDR range)
 - New `NetworkHelper::isPrivateIp()` and `NetworkHelper::isPublicIp()` to check whether an IP is private/reserved or publicly routable
 - New `NetworkHelper::ipInRange()` to check IP membership in an inclusive range (IPv4/IPv6)

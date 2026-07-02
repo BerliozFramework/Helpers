@@ -223,6 +223,23 @@ final class FileHelper
     }
 
     /**
+     * Normalize path.
+     *
+     * Uniformize directory separators (backslashes to slashes) and
+     * collapse consecutive slashes into a single one.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public static function normalizePath(string $path): string
+    {
+        $path = str_replace(['\\', '/'], '/', $path);
+
+        return preg_replace('#/{2,}#', '/', $path);
+    }
+
+    /**
      * Uniformize path separator.
      *
      * @param string $path
@@ -231,9 +248,7 @@ final class FileHelper
      */
     private static function uniformizePathSeparator(string $path): string
     {
-        $path = str_replace(['\\', '/'], '/', $path);
-
-        return preg_replace('#/{2,}#', '/', $path);
+        return self::normalizePath($path);
     }
 
     /**

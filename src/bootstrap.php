@@ -279,6 +279,21 @@ function b_ftruncate($resource, int $size, ?int $offset = null): bool
     return FileHelper::ftruncate($resource, $size, $offset);
 }
 
+/**
+ * Normalize path.
+ *
+ * Uniformize directory separators (backslashes to slashes) and
+ * collapse consecutive slashes into a single one.
+ *
+ * @param string $path
+ *
+ * @return string
+ */
+function b_file_normalize_path(string $path): string
+{
+    return FileHelper::normalizePath($path);
+}
+
 
 //////////////////////
 /// NETWORK HELPER ///

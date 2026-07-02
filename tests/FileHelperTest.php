@@ -219,4 +219,22 @@ class FileHelperTest extends TestCase
         $this->assertEquals(strlen($prefix) + strlen($suffix), strlen($result));
         $this->assertEquals($prefix . $suffix, $result);
     }
+
+    public function testNormalizePath()
+    {
+        // Backslashes to slashes
+        $this->assertEquals('C:/foo/bar', FileHelper::normalizePath('C:\\foo\\bar'));
+
+        // Collapse consecutive slashes
+        $this->assertEquals('/foo/bar/baz', FileHelper::normalizePath('/foo//bar///baz'));
+
+        // Mixed separators
+        $this->assertEquals('C:/a/b/c', FileHelper::normalizePath('C:\\a\\\\b/c'));
+
+        // Already normalized
+        $this->assertEquals('/foo/bar', FileHelper::normalizePath('/foo/bar'));
+
+        // Empty string
+        $this->assertEquals('', FileHelper::normalizePath(''));
+    }
 }
