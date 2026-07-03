@@ -493,8 +493,13 @@ function b_net_client_ip(
 /**
  * Is the given IP a trusted proxy?
  *
+ * Entries may be exact IP addresses, CIDR ranges (e.g. `10.0.0.0/8`) or
+ * case-insensitive symbolic aliases: `private`, `public`, `loopback` and the
+ * catch-all `*`, `any`, `0.0.0.0/0`, `::/0`. Invalid or unknown entries are
+ * ignored.
+ *
  * @param string $ip
- * @param string[] $trustedProxies List of trusted proxy IPs or CIDR ranges
+ * @param string[] $trustedProxies List of trusted proxy IPs, CIDR ranges or aliases
  *
  * @return bool
  */

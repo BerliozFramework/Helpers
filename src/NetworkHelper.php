@@ -510,17 +510,36 @@ final class NetworkHelper
      * Is the given IP a trusted proxy?
      *
      * A proxy is trusted when it matches one of the given entries, either as an
-     * exact IP address or by belonging to a CIDR range (e.g. `10.0.0.0/8`).
-     * Invalid entries are ignored.
+     * exact IP address, by belonging to a CIDR range (e.g. `10.0.0.0/8`), or by
+     * matching a symbolic alias (case-insensitive):
+     *  - `private`: any private/reserved IP address
+     *  - `public`: any publicly routable IP address
+     *  - `loopback`: `127.0.0.0/8` or `::1`
+     *  - `*`, `any`, `0.0.0.0/0`, `::/0`: any valid IP address (both families)
+     *
+     * Invalid or unknown entries are ignored.
+     *
+     * Security note: broad aliases such as `*`, `any` or `public` mark (nearly)
+     * any peer as a trusted proxy, which lets a client spoof its address via the
+     * forwarded header. Use them only in controlled environments.
      *
      * @param string $ip
-     * @param string[] $trustedProxies List of trusted proxy IPs or CIDR ranges
+     * @param string[] $trustedProxies List of trusted proxy IPs, CIDR ranges or aliases
      *
      * @return bool
      */
     public static function isTrustedProxy(string $ip, array $trustedProxies): bool
     {
         foreach ($trustedProxies as $trusted) {
+            // Symbolic alias (private, public, loopback, catch-all)
+            $alias = self::matchProxyAlias($ip, (string)$trusted);
+            if (null !== $alias) {
+                if (true === $alias) {
+                    return true;
+                }
+                continue;
+            }
+
             if (false !== strpos($trusted, '/')) {
                 if (self::isValidCidr($trusted) && self::ipInNetwork($ip, $trusted)) {
                     return true;
@@ -534,6 +553,34 @@ final class NetworkHelper
         }
 
         return false;
+    }
+
+    /**
+     * Match an IP against a symbolic trusted-proxy alias.
+     *
+     * @param string $ip
+     * @param string $entry
+     *
+     * @return bool|null True/false if the entry is a known alias, null otherwise
+     */
+    private static function matchProxyAlias(string $ip, string $entry): ?bool
+    {
+        switch (strtolower(trim($entry))) {
+            case 'private':
+                return self::isPrivateIp($ip);
+            case 'public':
+                return self::isPublicIp($ip);
+            case 'loopback':
+                return self::isValidIp($ip)
+                    && (self::ipInNetwork($ip, '127.0.0.0/8') || self::ipInNetwork($ip, '::1/128'));
+            case '*':
+            case 'any':
+            case '0.0.0.0/0':
+            case '::/0':
+                return self::isValidIp($ip);
+            default:
+                return null;
+        }
     }
 
     /**

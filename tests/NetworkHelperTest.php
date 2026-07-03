@@ -408,6 +408,85 @@ class NetworkHelperTest extends TestCase
         $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['foo', '10.0.0.0/8']));
     }
 
+    public function testIsTrustedProxyAliasPrivate()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['private']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('192.168.1.1', ['private']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('fc00::1', ['private']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('8.8.8.8', ['private']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('2001:4860:4860::8888', ['private']));
+    }
+
+    public function testIsTrustedProxyAliasPublic()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('8.8.8.8', ['public']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('2001:4860:4860::8888', ['public']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.5', ['public']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('192.168.1.1', ['public']));
+    }
+
+    public function testIsTrustedProxyAliasLoopback()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('127.0.0.1', ['loopback']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('127.255.255.254', ['loopback']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('::1', ['loopback']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.5', ['loopback']));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('2001:db8::1', ['loopback']));
+    }
+
+    public function testIsTrustedProxyAliasCatchAll()
+    {
+        foreach (['*', 'any', '0.0.0.0/0', '::/0'] as $alias) {
+            $this->assertTrue(NetworkHelper::isTrustedProxy('8.8.8.8', [$alias]), $alias);
+            $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', [$alias]), $alias);
+            $this->assertTrue(NetworkHelper::isTrustedProxy('2001:db8::1', [$alias]), $alias);
+            $this->assertTrue(NetworkHelper::isTrustedProxy('::1', [$alias]), $alias);
+            // Invalid IP is never trusted, even with catch-all
+            $this->assertFalse(NetworkHelper::isTrustedProxy('not an ip', [$alias]), $alias);
+        }
+    }
+
+    public function testIsTrustedProxyAliasCaseInsensitive()
+    {
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['PRIVATE']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('127.0.0.1', ['LoopBack']));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('8.8.8.8', ['Any']));
+        // Surrounding whitespace is trimmed
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['  private  ']));
+    }
+
+    public function testIsTrustedProxyUnknownAliasIgnored()
+    {
+        // Unknown alias behaves like any other invalid entry: ignored
+        $this->assertFalse(NetworkHelper::isTrustedProxy('10.0.0.5', ['reserved']));
+        // But a valid entry in the same list is still honoured
+        $this->assertTrue(NetworkHelper::isTrustedProxy('10.0.0.5', ['reserved', '10.0.0.0/8']));
+    }
+
+    public function testIsTrustedProxyAliasMixedList()
+    {
+        $proxies = ['192.168.1.1', 'loopback', '2001:db8::/32'];
+
+        $this->assertTrue(NetworkHelper::isTrustedProxy('192.168.1.1', $proxies));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('127.0.0.1', $proxies));
+        $this->assertTrue(NetworkHelper::isTrustedProxy('2001:db8::abcd', $proxies));
+        $this->assertFalse(NetworkHelper::isTrustedProxy('203.0.113.7', $proxies));
+    }
+
+    public function testClientIpWithPrivateAlias()
+    {
+        // The direct peer is a private proxy; the forwarded client is returned
+        $client = NetworkHelper::clientIp(
+            ['private'],
+            [
+                'REMOTE_ADDR' => '10.0.0.1',
+                'HTTP_X_FORWARDED_FOR' => '203.0.113.7',
+            ]
+        );
+
+        $this->assertSame('203.0.113.7', $client);
+    }
+
     public function testIsPrivateIp()
     {
         // IPv4 private ranges

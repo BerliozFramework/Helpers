@@ -171,8 +171,13 @@ All array path methods support the following path formats:
 
 - `b_net_is_trusted_proxy(string $ip, array $trustedProxies): bool`
 
-  Is the given IP a trusted proxy? Matches an exact IP address or a CIDR range (e.g. `10.0.0.0/8`). Invalid entries are
-  ignored.
+  Is the given IP a trusted proxy? Matches an exact IP address, a CIDR range (e.g. `10.0.0.0/8`) or a case-insensitive
+  symbolic alias: `private` (any private/reserved IP), `public` (any publicly routable IP), `loopback`
+  (`127.0.0.0/8` or `::1`) and the catch-all `*`, `any`, `0.0.0.0/0`, `::/0` (any valid IP, both families). Invalid or
+  unknown entries are ignored.
+
+  Security note: broad aliases such as `*`, `any` or `public` mark (nearly) any peer as trusted, allowing a client to
+  spoof its address via the forwarded header. Use them only in controlled environments.
 
 - `b_net_ip_to_long(string $ip): int|string|null`
 
